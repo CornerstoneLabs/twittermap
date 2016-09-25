@@ -1,5 +1,11 @@
+from dotenv import load_dotenv
+import os
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
 SEARCH = ['@kaelifa', ]
-CONSUMER_KEY='0n9YB5kpG8hQwIhGGrvWY5TQ7'
-CONSUMER_SECRET='4kYfZozWkpPko9wZGtae2p7ln9rsvmpFfOmDNRzqUX902gEEIA'
-ACCESS_TOKEN='15955730-7yu5wA14TKL5a7nF1nBeAePxre2n0WHL0AqwTvYp0'
-ACCESS_TOKEN_SECRET='CpCn8WEsybUdD5jEdIb5jIfccvyq3rtqa72B738EFUX5U'
+CONSUMER_KEY=os.environ['CONSUMER_KEY']
+CONSUMER_SECRET=os.environ['CONSUMER_SECRET']
+ACCESS_TOKEN=os.environ['ACCESS_TOKEN']
+ACCESS_TOKEN_SECRET=os.environ['ACCESS_TOKEN_SECRET']
