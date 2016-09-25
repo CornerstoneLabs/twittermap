@@ -6,6 +6,13 @@ var url = '/data/tweets.json';
 	var plotlist;
 	var plotlayers=[];
 
+	function removeMarkers() {
+		for (i=0;i<plotlayers.length;i++) {
+			map.removeLayer(plotlayers[i]);
+		}
+		plotlayers=[];
+	}
+
 	function onDataLoaded (data) {
 		plotlist = data;
 
@@ -39,11 +46,17 @@ var url = '/data/tweets.json';
 		// start the map in South-East England
 		map.setView(new L.LatLng(51.3, 0.7),9);
 		map.addLayer(osm);
+	}
 
+	function refresh () {
+		removeMarkers();
 		getData();
 	}
 
 	$(document).ready(function() {
 		initmap();
+		refresh();
+
+		window.setInterval(refresh, 3000);
 	});
 })();
