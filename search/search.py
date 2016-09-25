@@ -48,7 +48,7 @@ if __name__ == '__main__':
     try:
         tso = TwitterSearchOrder()  # create a TwitterSearchOrder object
         tso.set_keywords(settings.SEARCH)  # let's define all words we would like to have a look for
-        tso.set_language('en')  # we want to see German tweets only
+        #tso.set_language('en')  # we want to see German tweets only
         tso.set_include_entities(False)  # and don't give us all those entity information
 
         # it's about time to create a TwitterSearch object with our secret tokens
@@ -58,11 +58,18 @@ if __name__ == '__main__':
             access_token=settings.ACCESS_TOKEN,
             access_token_secret=settings.ACCESS_TOKEN_SECRET)
 
+        tweets = ts.search_tweets_iterable(tso)
+
         # this is where the fun actually starts :)
-        for tweet in ts.search_tweets_iterable(tso):
+        for tweet in tweets:
             print('\n%s\n' % tweet)
             print('@%s tweeted: %s %s ' % (tweet['user']['screen_name'], tweet['text'], tweet['user']['location']))
-            town_list = lookup_town(towns, tweet['user']['location'])
+
+            split_words = tweet['text'].split(' ')
+
+            town_list = []
+            for search_town in split_words:
+                town_list = town_list + lookup_town(towns, search_town)
 
             if len(town_list) > 0:
                 town = town_list[0]
