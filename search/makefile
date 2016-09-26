@@ -4,3 +4,7 @@ install:
 
 search:
 	source bin/activate && python search.py	
+
+infinity:
+	python search.py
+	make infinity	
