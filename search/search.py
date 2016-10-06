@@ -5,6 +5,7 @@ import csv
 import json
 import settings
 import time
+from rehash import create_geohashes
 
 TOWN_CITY = 3
 TOWN_LONGITUDE = 6
@@ -75,18 +76,21 @@ def lookup_town(towns, search):
 
     print('Looking up %s' % search)
 
-    for town in towns:
-        compare_name = town[TOWN_CITY].lower().strip()
-        if compare_name == search:
-            found.append({
-                'latitude': town[TOWN_LATITUDE],
-                'longitude': town[TOWN_LONGITUDE],
-                'name': town[TOWN_CITY],
-                'country': town[TOWN_COUNTRY]
-            })
+    found = lookup_town_from_json(search)
 
     if len(found) == 0:
-        found = lookup_town_from_json(search)
+        with open(settings.TOWN_DATA, newline='', encoding='latin-1') as csvfile:
+            town_data_reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+
+            for town in town_data_reader:
+                compare_name = town[TOWN_CITY].lower().strip()
+                if compare_name == search:
+                    found.append({
+                        'latitude': town[TOWN_LATITUDE],
+                        'longitude': town[TOWN_LONGITUDE],
+                        'name': town[TOWN_CITY],
+                        'country': town[TOWN_COUNTRY]
+                    })
 
     print('Found %s' % found)
 
@@ -184,7 +188,7 @@ def save_data(output_data):
     output_file.close()
 
 if __name__ == '__main__':
-    towns = read_town_data()
+    towns = []
 
     output_data = []
     max_id = None
@@ -192,5 +196,7 @@ if __name__ == '__main__':
     while True:
         scan_twitter(output_data, max_id, towns)
         save_data(output_data)
+        print('Creating hashes')
+        create_geohashes(output_data)
         print('Sleeping')
         time.sleep(60)
