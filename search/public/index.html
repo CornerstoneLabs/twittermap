@@ -14,12 +14,16 @@
 
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/cornerstonelabs.css">
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
         <link rel="stylesheet" href="https://unpkg.com/leaflet@0.7.7/dist/leaflet.css" />
         <script src="https://unpkg.com/leaflet@0.7.7/dist/leaflet.js"></script>
         <script src="bower_components/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+        <script type="text/javascript" src="js/vendor/leaflet-control-credits.js"></script>
+
         <link rel="stylesheet" href="bower_components/leaflet.markercluster/dist/MarkerCluster.css" />
         <link rel="stylesheet" href="bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+        <link rel="stylesheet" href="js/vendor/leaflet-control-credits.css" />
     </head>
     <body>
         <!--[if lt IE 8]>
@@ -31,7 +35,16 @@
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
 
-        <div id="map"></div>
+        <!-- <div id="MapWrapper">
+            <a id="CornerstoneLabs" href="http://www.cornerstonelabs.co.uk/">Cornerstone Labs</a>
+            <div id="map"></div>
+        </div> -->
+
+        <div id="map">
+            <div class="mapboxgl-ctrl-bottom-left">
+                <a id="CornerstoneLabs" href="http://www.cornerstonelabs.co.uk/">Cornerstone Labs</a>
+            </div>
+        </div>
 
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->

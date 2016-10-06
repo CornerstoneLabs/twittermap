@@ -1,0 +1,20 @@
+#MapWrapper {
+    background-color: red;
+    height: 750px;
+    position: relative;
+    width: 750px;
+}
+
+#CornerstoneLabs {
+    background-image: url(../img/CornerstoneLabs.svg);
+    background-repeat: none;
+    background-size: 155px 25px;
+    bottom: 0;
+    display: block;
+    left: 0;
+/*    position: absolute;
+    text-indent: -9999em;
+*/    height: 25px;
+    width: 155px;
+    z-index: 2;
+}
