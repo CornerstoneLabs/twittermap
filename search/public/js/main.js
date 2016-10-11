@@ -9,7 +9,7 @@ var url = 'data/tweets.json';
 	var firstScale = true;
 	var loadedData = [];
 	var USE_CLUSTERING = false;
-	var hashIndex;
+	var hashIndex = [];
 
 	function removeMarkers() {
 		for (i=0;i<plotlayers.length;i++) {
@@ -137,10 +137,22 @@ var url = 'data/tweets.json';
 		var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
 		var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 12, attribution: osmAttrib});
 
+		var mapboxUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={token}';
+		var mapboxLayer = new L.TileLayer(mapboxUrl, {
+			id: 'mapbox.emerald',
+			minZoom: 8,
+			maxZoom: 12,
+			attribution: osmAttrib,
+			token: API_KEY
+		});
+
 		// start the map in South-East England
 		map.setView(new L.LatLng(52.360, 0.0), 10);
-		map.locate({setView: true, maxZoom: 16});
-		map.addLayer(osm);
+		map.locate({
+			setView: true,
+			maxZoom: 16
+		});
+		map.addLayer(mapboxLayer);
 
 		markerGroup = L.markerClusterGroup({
 			spiderfyOnMaxZoom: false,
