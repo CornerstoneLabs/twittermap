@@ -142,6 +142,14 @@ var url = 'data/tweets.json';
 		map.locate({setView: true, maxZoom: 16});
 		map.addLayer(osm);
 
+		var credctrl = L.controlCredits({
+			image: "../img/CornerstoneLabs.svg",
+			link: "http://www.cornerstonelabs.co.uk/",
+			text: "Interactive mapping<br/>by Cornerstone Labs",
+			width: "155",
+			height: "25"
+		}).addTo(map);
+
 		markerGroup = L.markerClusterGroup({
 			spiderfyOnMaxZoom: false,
 			showCoverageOnHover: false,
