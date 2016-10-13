@@ -156,7 +156,7 @@ var url = 'data/tweets.json';
 
 		var credctrl = L.controlCredits({
 			image: "img/favicon.png",
-			link: "https://www.cornerstonelabs.co.uk/",
+			link: "http://www.cornerstonelabs.co.uk/",
 			text: "Interactive mapping<br/>by Cornerstone Labs",
 			position: 'bottomleft',
 			width: 152,
