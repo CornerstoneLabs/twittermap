@@ -154,6 +154,15 @@ var url = 'data/tweets.json';
 		// });
 		map.addLayer(mapboxLayer);
 
+		var credctrl = L.controlCredits({
+			image: "img/favicon.png",
+			link: "https://www.cornerstonelabs.co.uk/",
+			text: "Interactive mapping<br/>by Cornerstone Labs",
+			position: 'bottomleft',
+			width: 152,
+			height: 152
+		}).addTo(map);
+
 		markerGroup = L.markerClusterGroup({
 			spiderfyOnMaxZoom: false,
 			showCoverageOnHover: false,
