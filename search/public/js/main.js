@@ -9,7 +9,7 @@ var url = 'data/tweets.json';
 	var firstScale = true;
 	var loadedData = [];
 	var USE_CLUSTERING = false;
-	var hashIndex;
+	var hashIndex = [];
 
 	function removeMarkers() {
 		for (i=0;i<plotlayers.length;i++) {
@@ -134,13 +134,25 @@ var url = 'data/tweets.json';
 
 		// create the tile layer with correct attribution
 		var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-		var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+		var osmAttrib='';
 		var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 12, attribution: osmAttrib});
+
+		var mapboxUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={token}';
+		var mapboxLayer = new L.TileLayer(mapboxUrl, {
+			id: 'mapbox.emerald',
+			minZoom: 8,
+			maxZoom: 14,
+			attribution: osmAttrib,
+			token: API_KEY
+		});
 
 		// start the map in South-East England
 		map.setView(new L.LatLng(52.360, 0.0), 10);
-		map.locate({setView: true, maxZoom: 16});
-		map.addLayer(osm);
+		// map.locate({
+		// 	setView: true,
+		// 	maxZoom: 16
+		// });
+		map.addLayer(mapboxLayer);
 
 		var credctrl = L.controlCredits({
 			image: "../img/CornerstoneLabs.svg",
@@ -164,6 +176,12 @@ var url = 'data/tweets.json';
 		map.on('moveend', function() {
 			window.setTimeout(refresh, 1000);
  		});
+
+ 		var lc = L.control.locate({
+ 			flyTo: true
+ 		}).addTo(map);
+
+ 		lc.start();
 	}
 
 	$(document).ready(function() {
