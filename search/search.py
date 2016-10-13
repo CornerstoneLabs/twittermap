@@ -1,10 +1,13 @@
 """Search client."""
 
-from TwitterSearch import *
+from TwitterSearch import TwitterSearchOrder, TwitterSearchException, TwitterSearch
 import csv
 import json
 import settings
-import time
+import os
+import subprocess
+import shlex
+import sys
 from rehash import create_geohashes
 
 TOWN_CITY = 3
@@ -123,7 +126,7 @@ def lookup_location(towns, tweet):
 def add_tweet(output_data, towns, tweet):
     """Add the tweet to data."""
     print('\n%s\n' % tweet)
-    print('@%s tweeted: %s %s ' % (tweet['user']['screen_name'], tweet['text'], tweet['user']['location']))
+    print('%s tweeted: %s %s ' % (tweet['user']['name'], tweet['text'], tweet['user']['location']))
 
     town = lookup_location(towns, tweet)
 
@@ -132,26 +135,59 @@ def add_tweet(output_data, towns, tweet):
         longitude = town['longitude']
 
         output_obj = {}
-        output_obj['name'] = '@%s' % tweet['user']['screen_name']
+        output_obj['name'] = '%s' % tweet['user']['name']
+        output_obj['screen_name'] = '%s' % tweet['user']['screen_name']
         output_obj['lon'] = longitude
         output_obj['lat'] = latitude
         output_obj['avatar'] = tweet['user']['profile_image_url']
         output_obj['details'] = town['name']
         output_obj['id'] = tweet['id']
+        output_obj['id_str'] = tweet['id_str']
 
         output_data.append(output_obj)
     else:
         print('Could not find town')
 
 
+def get_max_id():
+    """Get the latest tweet we've ever got."""
+    max_id = 0
+
+    try:
+        file_handle = open('public/data/maxid.json', 'rt')
+        data = json.load(file_handle)
+        print(data)
+        max_id = data['max_id']
+        file_handle.close()
+    except Exception as ex:
+        print('error %s' % ex)
+        pass
+    return max_id
+
+
+def set_max_id(max_id):
+    """Set the latest tweet we've ever got."""
+    output_file = open('public/data/maxid.json', 'wt')
+    output_data = {
+        'max_id': max_id
+    }
+    output_file.write(json.dumps(output_data))
+    output_file.close()
+
+
 def scan_twitter(output_data, max_id, towns):
     """Scan twitter."""
     print('Scanning twitter')
+    max_id = get_max_id()
     try:
         tso = TwitterSearchOrder()
         tso.set_keywords(settings.SEARCH)
         # tso.set_language('en')  # we want to see German tweets only
         tso.set_include_entities(False)
+
+        print('Setting max id: %s' % max_id)
+        # if max_id != 0:
+        #    tso.set_max_id(max_id)
 
         ts = TwitterSearch(
             consumer_key=settings.CONSUMER_KEY,
@@ -161,7 +197,7 @@ def scan_twitter(output_data, max_id, towns):
 
         if max_id:
             print('Searching since: %s' % max_id)
-            ts.set_since_id(max_id)
+            tso.set_since_id(max_id)
 
         print('Retrieved list of tweets')
         tweets = ts.search_tweets_iterable(tso)
@@ -169,9 +205,10 @@ def scan_twitter(output_data, max_id, towns):
         print('Now examining tweets')
         for tweet in tweets:
             print(tweet)
-            if max_id is None or (max_id and tweet['id'] > max_id):
+            if tweet['id'] > max_id:
                 max_id = tweet['id']
                 print('Setting max_id %s' % max_id)
+                set_max_id(max_id)
 
             add_tweet(output_data, towns, tweet)
 
@@ -187,16 +224,15 @@ def save_data(output_data):
     output_file.write(json.dumps(output_data))
     output_file.close()
 
+
 if __name__ == '__main__':
     towns = []
 
     output_data = []
     max_id = None
 
-    while True:
-        scan_twitter(output_data, max_id, towns)
-        save_data(output_data)
-        print('Creating hashes')
-        create_geohashes(output_data)
-        print('Sleeping')
-        time.sleep(60)
+    scan_twitter(output_data, max_id, towns)
+    save_data(output_data)
+    print('Creating hashes')
+    create_geohashes(output_data)
+    print('Done')

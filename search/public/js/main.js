@@ -46,7 +46,16 @@ var url = 'data/tweets.json';
 			newMarker.data = markerData;
 
 			// add to group
-			newMarker.bindPopup("<div style=\"text-align: center\"><h3><div><img style=\"border-radius:5px\" src=\"" + markerData.avatar + "\" /></div>"+  markerData.name+"</h3>"+markerData.details + "</div>");
+			newMarker.bindPopup("<div style=\"text-align: center\"><h3><div><img style=\"border-radius:5px\" src=\""
+				+ markerData.avatar
+				+ "\" /></div><a href=\"https://twitter.com/statuses/"
+				+ markerData.id_str
+				+ "\">"
+				+ markerData.name
+				+ "</a></h3>"
+				+ markerData.details
+				+ "</div>"
+			);
 
 			if (USE_CLUSTERING === true) {
 				markerGroup.addLayer(newMarker);
@@ -178,11 +187,13 @@ var url = 'data/tweets.json';
 			window.setTimeout(refresh, 1000);
  		});
 
- 		var lc = L.control.locate({
+		var lc = L.control.locate({
  			flyTo: true
  		}).addTo(map);
 
- 		lc.start();
+		window.setTimeout(function () {
+	 		lc.start();
+		}, 2000);
 	}
 
 	$(document).ready(function() {
