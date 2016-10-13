@@ -4,6 +4,7 @@ install:
 
 deploy:
 	#scp -r -P 6022 ./public/* root@46.101.12.19:/var/www/dumteedum/public/
+	scp -r -P 6022 ./public/img/* root@46.101.12.19:/var/www/dumteedum/public/img/
 	scp -r -P 6022 ./public/js/* root@46.101.12.19:/var/www/dumteedum/public/js/
 	scp -r -P 6022 ./public/index.html root@46.101.12.19:/var/www/dumteedum/public/index.html
 	scp -r -P 6022 ./search.py root@46.101.12.19:/var/www/dumteedum/search.py
