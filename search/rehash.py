@@ -1,6 +1,5 @@
 """Search client."""
 
-from TwitterSearch import *
 import json
 import settings
 import geohash
@@ -14,6 +13,17 @@ TOWN_COUNTRY = 1
 def write_keys(hashes):
     """Output all the hashes that we have."""
     keys = [key for key in hashes]
+
+    try:
+        input_file = open('public/data/hashindex.json', 'rt')
+        data = json.loads(input_file.read())
+        input_file.close()
+
+        for item in data:
+            keys.append(item)
+    except Exception as ex:
+        print(ex)
+
     output_file = open('public/data/hashindex.json', 'wt')
     output_file.write(json.dumps(keys))
     output_file.close()

@@ -100,7 +100,7 @@ var url = 'data/tweets.json';
 						}).length !== 0) {
 							$.get(localUrl, function (data) {
 								// remember this data
-								caches[localUrl] = data;
+								//caches[localUrl] = data;
 								onDataLoaded(data, function() {
 									window.setTimeout(next, 10);
 								});
@@ -194,6 +194,8 @@ var url = 'data/tweets.json';
 		window.setTimeout(function () {
 	 		lc.start();
 		}, 2000);
+
+		window.setInterval(refresh, 1000 * 10);
 	}
 
 	$(document).ready(function() {
