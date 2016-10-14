@@ -4,10 +4,6 @@ from TwitterSearch import TwitterSearchOrder, TwitterSearchException, TwitterSea
 import csv
 import json
 import settings
-import os
-import subprocess
-import shlex
-import sys
 from rehash import create_geohashes
 
 TOWN_CITY = 3
@@ -177,15 +173,14 @@ def set_max_id(max_id):
 
 def scan_twitter(output_data, max_id, towns):
     """Scan twitter."""
-    print('Scanning twitter')
+    print('Scanning twitter for %s' % settings.SEARCH)
     max_id = get_max_id()
     try:
         tso = TwitterSearchOrder()
         tso.set_keywords(settings.SEARCH)
         # tso.set_language('en')  # we want to see German tweets only
-        tso.set_include_entities(False)
+        tso.set_include_entities(True)
 
-        print('Setting max id: %s' % max_id)
         # if max_id != 0:
         #    tso.set_max_id(max_id)
 
@@ -197,20 +192,34 @@ def scan_twitter(output_data, max_id, towns):
 
         if max_id:
             print('Searching since: %s' % max_id)
+            # working backwards
+            # tso.set_max_id(max_id)
+            #
+            # working forwards
             tso.set_since_id(max_id)
 
         print('Retrieved list of tweets')
         tweets = ts.search_tweets_iterable(tso)
 
+        print('Statistics')
+        print(ts.get_statistics())
+
         print('Now examining tweets')
         for tweet in tweets:
             print(tweet)
-            if tweet['id'] > max_id:
+            add_tweet(output_data, towns, tweet)
+
+            # if we're working backwards
+            # if max_id == 0 or tweet['id'] < max_id:
+            #     max_id = tweet['id'] - 1
+            #     print('Setting max_id %s' % max_id)
+            #     set_max_id(max_id)
+            #
+            # working forwards
+            if max_id == 0 or tweet['id'] > max_id:
                 max_id = tweet['id']
                 print('Setting max_id %s' % max_id)
                 set_max_id(max_id)
-
-            add_tweet(output_data, towns, tweet)
 
         print('Finished')
 
@@ -220,6 +229,16 @@ def scan_twitter(output_data, max_id, towns):
 
 def save_data(output_data):
     """Save data to a file."""
+    try:
+        input_file = open('public/data/tweets.json', 'rt')
+        data = json.loads(input_file.read())
+        input_file.close()
+
+        for item in data:
+            output_data.append(item)
+    except Exception as ex:
+        print(ex)
+
     output_file = open('public/data/tweets.json', 'wt')
     output_file.write(json.dumps(output_data))
     output_file.close()
