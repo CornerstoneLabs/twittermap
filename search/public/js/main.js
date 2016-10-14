@@ -164,12 +164,12 @@ var url = 'data/tweets.json';
 		map.addLayer(mapboxLayer);
 
 		var credctrl = L.controlCredits({
-			image: "img/favicon.png",
+			image: "img/cl.png",
 			link: "http://www.cornerstonelabs.co.uk/",
 			text: "Interactive mapping<br/>by Cornerstone Labs",
 			position: 'bottomleft',
-			width: 152,
-			height: 152
+			width: 50,
+			height: 50
 		}).addTo(map);
 
 		markerGroup = L.markerClusterGroup({
