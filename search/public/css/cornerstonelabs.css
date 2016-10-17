@@ -12,9 +12,7 @@
     bottom: 0;
     display: block;
     left: 0;
-/*    position: absolute;
-    text-indent: -9999em;
-*/    height: 25px;
+    height: 25px;
     width: 155px;
     z-index: 2;
 }
@@ -35,4 +33,15 @@
 
 .cl-info-panel .fa-info {
     color: #999;
+}
+
+.leaflet-credits-control a {
+    display: inline-block;
+    margin-right: 4px;
+}
+
+/* info button top right */
+.easy-button-button.leaflet-bar-part.leaflet-interactive {
+    background-color: #242d3d;
+    color: #fff;
 }
