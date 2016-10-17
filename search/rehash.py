@@ -24,16 +24,16 @@ def write_keys(hashes):
     except Exception as ex:
         print(ex)
 
-    output_file = open('public/data/hashindex.json', 'wt')
-    output_file.write(json.dumps(keys))
-    output_file.close()
+    # output_file = open('public/data/hashindex.json', 'wt')
+    # output_file.write(json.dumps(keys))
+    # output_file.close()
 
 
 def read_data():
     """Save data to a file."""
-    input_file = open('public/data/tweets.json', 'rt')
+    input_file = open('public/data/tweets.spool', 'rt')
     input_data = input_file.read()
-    result = json.loads(input_data)
+    result = json.loads('[%s]' % input_data[:-1])
     input_file.close()
 
     return result
@@ -64,11 +64,18 @@ def create_geohashes(output_data):
             hashes[calculated_geohash] = []
             print('Added hash %s' % calculated_geohash)
 
+        print('%s hashed %s' % (item['details'], calculated_geohash))
+
         hashes[calculated_geohash].append(item)
 
     write_geohashes(hashes)
     write_keys(hashes)
 
-if __name__ == '__main__':
+
+def create_geohashes_please():
+    """Read all the data first."""
     data = read_data()
     create_geohashes(data)
+
+if __name__ == '__main__':
+    create_geohashes_please()
