@@ -1,4 +1,6 @@
 var url = 'data/tweets.json';
+var MAP_NAME = 'TESTING';
+var TWEET_HASHTAG  = '#clmtest';
 
 (function () {
 	window.twttr = (function(d, s, id) {
@@ -222,8 +224,13 @@ var url = 'data/tweets.json';
 			window.setTimeout(refresh, 1000);
  		});
 
+		var locateError = L.popup().setContent('Unable to work out your location.');
 		var lc = L.control.locate({
- 			flyTo: true
+ 			flyTo: true,
+ 			onLocationError: function () {
+ 				locateError.setLatLng(map.getCenter()).openOn(map);
+ 			},
+ 			onLocationOutsideMapBounds: function () { },
  		}).addTo(map);
 
 		window.setTimeout(function () {
@@ -231,6 +238,17 @@ var url = 'data/tweets.json';
 		}, 2000);
 
 		window.setInterval(refresh, 1000 * 10);
+
+		var html = '<div><h2>Pin yourself to the ' + MAP_NAME + ' map</h2><p>Tweet your town + country to ' + TWEET_HASHTAG + '.</p><p><a style="opacity: 0;" class="twitter-share-button" data-url="" href="https://twitter.com/intent/tweet?text=#clmtest%20London">Tweet location</a></p></div>';
+		var infoPopup = L.popup().setContent(html);
+		var easyButton = L.easyButton('fa-info', function(btn, map){
+			infoPopup.setLatLng(map.getCenter()).openOn(map);
+			window.setTimeout(function () {
+				window.twttr.widgets.load();
+			}, 10);
+		});
+		easyButton.options.position = 'topright';
+		easyButton.addTo(map);
 	}
 
 	$(document).ready(function() {
