@@ -1,6 +1,23 @@
 var url = 'data/tweets.json';
 
 (function () {
+	window.twttr = (function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0],
+    t = window.twttr || {};
+  if (d.getElementById(id)) return t;
+  js = d.createElement(s);
+  js.id = id;
+  js.src = "https://platform.twitter.com/widgets.js";
+  fjs.parentNode.insertBefore(js, fjs);
+
+  t._e = [];
+  t.ready = function(f) {
+    t._e.push(f);
+  };
+
+  return t;
+}(document, "script", "twitter-wjs"));
+
 	var map;
 	var ajaxRequest;
 	var plotlist;
@@ -10,6 +27,10 @@ var url = 'data/tweets.json';
 	var loadedData = [];
 	var USE_CLUSTERING = false;
 	var hashIndex = [];
+
+	function twitterBoot () {
+		window.twttr.widgets.load();
+	}
 
 	function removeMarkers() {
 		for (i=0;i<plotlayers.length;i++) {
@@ -48,8 +69,8 @@ var url = 'data/tweets.json';
 			// add to group
 			newMarker.bindPopup("<div style=\"text-align: center\"><h3><div><img style=\"border-radius:5px\" src=\""
 				+ markerData.avatar
-				+ "\" /></div><a href=\"https://twitter.com/statuses/"
-				+ markerData.id_str
+				+ "\" /></div><a target=\"_blank\" href=\"https://twitter.com/"
+				+ markerData.screen_name
 				+ "\">"
 				+ markerData.name
 				+ "</a></h3>"
@@ -87,35 +108,47 @@ var url = 'data/tweets.json';
 	function getData () {
 		var index = 0;
 
+		NProgress.start();
+
+		function done () {
+			NProgress.done();
+
+			window.setTimeout(next, 10);
+		}
+
 		function next() {
 			if (index < hashes.length) {
+				var hash = hashes[index];
+
 				index++;
 
-				if (typeof hashes[index] !== 'undefined') {
-					var localUrl = 'data/tweets-' + hashes[index] + '.json';
+				//if (typeof hashes[index] !== 'undefined' || true) {
+					var localUrl = 'data/tweets-' + hash + '.json';
 
-					if (typeof caches[localUrl] === 'undefined') {
-						if (hashIndex.filter(function (item) {
-							return (item == hashes[index]);
-						}).length !== 0) {
+					//if (typeof caches[localUrl] === 'undefined') {
+						// if (hashIndex.filter(function (item) {
+						// 	return (item == hash);
+						// }).length !== 0) {
 							$.get(localUrl, function (data) {
 								// remember this data
 								//caches[localUrl] = data;
 								onDataLoaded(data, function() {
-									window.setTimeout(next, 10);
+									done();
 								});
 							}).fail(function (error) {
-								window.setTimeout(next, 10);
+								done();
 							});
-						} else {
-							next();
-						}
-					} else {
-						onDataLoaded(caches[localUrl], function() {
-							window.setTimeout(next, 10);
-						});
-					}
-				}
+						// } else {
+						// 	next();
+						// }
+					// } else {
+					// 	onDataLoaded(caches[localUrl], function() {
+					// 		done();
+					// 	});
+					// }
+			//	}
+			} else {
+				done();
 			}
 		}
 
@@ -132,7 +165,9 @@ var url = 'data/tweets.json';
 		var minLon = bounds.getWest();
 		var maxLon = bounds.getEast();
 
-		hashes = geohash.bboxes(minLat, minLon, maxLat, maxLon, 4);
+		hashes = geohash.bboxes(minLat, minLon, maxLat, maxLon, 3);
+
+		console.log(hashes);
 
 		getData();
 	}
@@ -166,10 +201,10 @@ var url = 'data/tweets.json';
 		var credctrl = L.controlCredits({
 			image: "img/cl.png",
 			link: "http://www.cornerstonelabs.co.uk/",
-			text: "Interactive mapping<br/>by Cornerstone Labs",
+			text: "Interactive map<br/>by Cornerstone Labs",
 			position: 'bottomleft',
-			width: 50,
-			height: 50
+			width: 30,
+			height: 30
 		}).addTo(map);
 
 		markerGroup = L.markerClusterGroup({
@@ -205,6 +240,8 @@ var url = 'data/tweets.json';
 			hashIndex = data;
 			refresh();
 		});
+
+//		twitterBoot();
 
 		//window.setInterval(refresh, 60 * 1000);
 	});
