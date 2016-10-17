@@ -65,13 +65,25 @@ var TWEET_HASHTAG  = '#clmtest';
 				};
 			}
 
+			var customIcon = new L.icon({
+				iconUrl: markerData.avatar,
+				iconSize: [48, 48],
+				iconAnchor: [24, 24],
+				popupAnchor: [0, 24],
+				className: 'twitter-avatar-marker'
+			});
+
+			opts.icon = customIcon;
+
 			var newMarker = new L.Marker(plotll, opts);
 			newMarker.data = markerData;
 
 			// add to group
-			newMarker.bindPopup("<div style=\"text-align: center\"><h3><div><img style=\"border-radius:5px\" src=\""
-				+ markerData.avatar
-				+ "\" /></div><a target=\"_blank\" href=\"https://twitter.com/"
+			newMarker.bindPopup("<div style=\"text-align: center\"><h3>"
+				//"<img style=\"border-radius:5px\" src=\""
+				// + markerData.avatar
+				//+ "\" />"
+				+ "<a target=\"_blank\" href=\"https://twitter.com/"
 				+ markerData.screen_name
 				+ "\">"
 				+ markerData.name
@@ -239,7 +251,11 @@ var TWEET_HASHTAG  = '#clmtest';
 
 		window.setInterval(refresh, 1000 * 10);
 
-		var html = '<div><h2>Pin yourself to the ' + MAP_NAME + ' map</h2><p>Tweet your town + country to ' + TWEET_HASHTAG + '.</p><p><a style="opacity: 0;" class="twitter-share-button" data-url="" href="https://twitter.com/intent/tweet?text=#clmtest%20London">Tweet location</a></p></div>';
+		var html = '<div class="cl-info-panel"><h2><span class="fa fa-info"></span> Pin yourself to the ' + MAP_NAME + ' map</h2><p>Tweet your town & country to ' + TWEET_HASHTAG + '.</p><p>' +
+		'<a href="https://twitter.com/intent/tweet?button_hashtag=#clmtest" class="twitter-hashtag-button" data-show-count="false">Tweet #clmtest</a>' +
+		//'<a style="opacity: 0;" class="twitter-share-button" data-url="" href="https://twitter.com/intent/tweet?text=#clmtest%20London">Tweet location</a>' +
+		'</p></div>';
+
 		var infoPopup = L.popup().setContent(html);
 		var easyButton = L.easyButton('fa-info', function(btn, map){
 			infoPopup.setLatLng(map.getCenter()).openOn(map);
