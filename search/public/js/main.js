@@ -2,23 +2,45 @@ var url = 'data/tweets.json';
 var MAP_NAME = 'TESTING';
 var TWEET_HASHTAG  = '#clmtest';
 
+//
+// Some way to load data
+//
+function ajax(url, callback, data, x) {
+	try {
+		x = new(this.XMLHttpRequest || ActiveXObject)('MSXML2.XMLHTTP.3.0');
+		x.open(data ? 'POST' : 'GET', url, 1);
+		x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+		x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		x.onreadystatechange = function () {
+			x.readyState > 3 && callback && callback(x.responseText, x);
+		};
+		x.send(data)
+	} catch (e) {
+		// window.console && console.log(e);
+	}
+};
+
+
 (function () {
+	//
+	// twitter injector here
+	//
 	window.twttr = (function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0],
-    t = window.twttr || {};
-  if (d.getElementById(id)) return t;
-  js = d.createElement(s);
-  js.id = id;
-  js.src = "https://platform.twitter.com/widgets.js";
-  fjs.parentNode.insertBefore(js, fjs);
+	    var js, fjs = d.getElementsByTagName(s)[0],
+	        t = window.twttr || {};
+	    if (d.getElementById(id)) return t;
+	    js = d.createElement(s);
+	    js.id = id;
+	    js.src = "https://platform.twitter.com/widgets.js";
+	    fjs.parentNode.insertBefore(js, fjs);
 
-  t._e = [];
-  t.ready = function(f) {
-    t._e.push(f);
-  };
+	    t._e = [];
+	    t.ready = function(f) {
+	        t._e.push(f);
+	    };
 
-  return t;
-}(document, "script", "twitter-wjs"));
+	    return t;
+	}(document, "script", "twitter-wjs"));
 
 	var map;
 	var ajaxRequest;
@@ -65,20 +87,30 @@ var TWEET_HASHTAG  = '#clmtest';
 				};
 			}
 
+			var customIcon = new L.icon({
+				iconUrl: markerData.avatar,
+				iconSize: [48, 48],
+				iconAnchor: [24, 24],
+				popupAnchor: [0, -10],
+				className: 'twitter-avatar-marker'
+			});
+
+			opts.icon = customIcon;
+
 			var newMarker = new L.Marker(plotll, opts);
 			newMarker.data = markerData;
 
 			// add to group
-			newMarker.bindPopup("<div style=\"text-align: center\"><h3><div><img style=\"border-radius:5px\" src=\""
-				+ markerData.avatar
-				+ "\" /></div><a target=\"_blank\" href=\"https://twitter.com/"
+			var popupHtml = "<div style=\"text-align: center\"><h3>"
+				+ "<a target=\"_blank\" href=\"https://twitter.com/"
 				+ markerData.screen_name
 				+ "\">"
 				+ markerData.name
 				+ "</a></h3>"
 				+ markerData.details
-				+ "</div>"
-			);
+				+ "</div>";
+
+			newMarker.bindPopup(popupHtml);
 
 			if (USE_CLUSTERING === true) {
 				markerGroup.addLayer(newMarker);
@@ -88,7 +120,6 @@ var TWEET_HASHTAG  = '#clmtest';
 					newMarker.addTo(map);
 					loadedData.push(newMarker);
 				} catch (e) {
-					console.log('error adding to map', e);
 				}
 			}
 		} else {
@@ -131,14 +162,19 @@ var TWEET_HASHTAG  = '#clmtest';
 						// if (hashIndex.filter(function (item) {
 						// 	return (item == hash);
 						// }).length !== 0) {
-							$.get(localUrl, function (data) {
+							ajax(localUrl, function (stringData, xhrRequest) {
+								var data = [];
+
+								try {
+									data = JSON.parse(stringData);
+								} catch (e) {
+
+								}
 								// remember this data
 								//caches[localUrl] = data;
 								onDataLoaded(data, function() {
 									done();
 								});
-							}).fail(function (error) {
-								done();
 							});
 						// } else {
 						// 	next();
@@ -169,35 +205,37 @@ var TWEET_HASHTAG  = '#clmtest';
 
 		hashes = geohash.bboxes(minLat, minLon, maxLat, maxLon, 3);
 
-		console.log(hashes);
+		//console.log(hashes);
 
 		getData();
 	}
 
 	function initmap() {
+		//
 		// set up the map
+		//
 		map = new L.Map('map');
 
+		//
 		// create the tile layer with correct attribution
+		//
 		var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 		var osmAttrib='';
-		var osm = new L.TileLayer(osmUrl, {minZoom: 8, maxZoom: 12, attribution: osmAttrib});
+		var osm = new L.TileLayer(osmUrl, {minZoom: 6, maxZoom: 15, attribution: osmAttrib});
 
 		var mapboxUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={token}';
 		var mapboxLayer = new L.TileLayer(mapboxUrl, {
 			id: 'mapbox.emerald',
-			minZoom: 8,
-			maxZoom: 14,
+			minZoom: 6,
+			maxZoom: 15,
 			attribution: osmAttrib,
 			token: API_KEY
 		});
 
-		// start the map in South-East England
-		map.setView(new L.LatLng(52.360, 0.0), 10);
-		// map.locate({
-		// 	setView: true,
-		// 	maxZoom: 16
-		// });
+		//
+		// start the map near Birmingham
+		//
+		map.setView(new L.LatLng(52.47872, -1.90723), 10);
 		map.addLayer(mapboxLayer);
 
 		var credctrl = L.controlCredits({
@@ -239,7 +277,10 @@ var TWEET_HASHTAG  = '#clmtest';
 
 		window.setInterval(refresh, 1000 * 10);
 
-		var html = '<div><h2>Pin yourself to the ' + MAP_NAME + ' map</h2><p>Tweet your town + country to ' + TWEET_HASHTAG + '.</p><p><a style="opacity: 0;" class="twitter-share-button" data-url="" href="https://twitter.com/intent/tweet?text=#clmtest%20London">Tweet location</a></p></div>';
+		var html = '<div class="cl-info-panel"><h2><span class="fa fa-info"></span> Pin yourself to the ' + MAP_NAME + ' map</h2><p>Tweet your town & country to ' + TWEET_HASHTAG + '.</p><p>' +
+			'<a href="https://twitter.com/intent/tweet?button_hashtag=#clmtest" class="twitter-hashtag-button" data-show-count="false">Tweet #clmtest</a>' +
+			'</p></div>';
+
 		var infoPopup = L.popup().setContent(html);
 		var easyButton = L.easyButton('fa-info', function(btn, map){
 			infoPopup.setLatLng(map.getCenter()).openOn(map);
@@ -251,16 +292,11 @@ var TWEET_HASHTAG  = '#clmtest';
 		easyButton.addTo(map);
 	}
 
-	$(document).ready(function() {
+	DomReady.ready(function() {
 		initmap();
 
-		$.get('data/hashindex.json', function (data) {
-			hashIndex = data;
+		window.setTimeout(function () {
 			refresh();
-		});
-
-//		twitterBoot();
-
-		//window.setInterval(refresh, 60 * 1000);
+		}, 1000);
 	});
 })();

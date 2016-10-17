@@ -12,9 +12,36 @@
     bottom: 0;
     display: block;
     left: 0;
-/*    position: absolute;
-    text-indent: -9999em;
-*/    height: 25px;
+    height: 25px;
     width: 155px;
     z-index: 2;
+}
+
+.twitter-avatar-marker {
+    border: solid 1px #fff;
+    border-radius: 50%;
+    box-shadow: 2px 3px 6px rgba(0,0,0,0.4);
+}
+
+.cl-info-panel {
+
+}
+
+.cl-info-panel p {
+    font-size: 16px;
+}
+
+.cl-info-panel .fa-info {
+    color: #999;
+}
+
+.leaflet-credits-control a {
+    display: inline-block;
+    margin-right: 4px;
+}
+
+/* info button top right */
+.easy-button-button.leaflet-bar-part.leaflet-interactive {
+    background-color: #242d3d;
+    color: #fff;
 }
