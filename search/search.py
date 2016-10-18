@@ -5,6 +5,7 @@ import csv
 import json
 import settings
 import datetime
+import tweet_update
 from rehash import create_geohashes_please
 
 TOWN_CITY = 3
@@ -174,7 +175,7 @@ def set_max_id(max_id):
 
 def store_tweet(tweet):
     """Store the tweet for backup."""
-    output_file = open('public/data/tweets.spool', 'at')
+    output_file = open('public/data/raw-tweets.spool', 'at')
     output_file.write('%s,\n' % json.dumps(tweet))
     output_file.close()
 
@@ -274,3 +275,11 @@ if __name__ == '__main__':
     print('Creating hashes')
     create_geohashes_please()
     print('Done')
+
+    print('Notifying')
+    for output_obj in output_data:
+        link = 'https://www.cornerstonelabs.co.uk/assets/tweetmap?lat=%s&lng=%s&o=t' % (
+            output_obj['lat'],
+            output_obj['lon']
+        )
+        tweet_update.reply_to_tweet(output_obj['id'], output_obj['screen_name'], "you're on the map! %s" % link)

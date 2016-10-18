@@ -11,6 +11,7 @@ deploy:
 	scp -r -P 6022 ./search.py root@46.101.12.19:/var/www/dumteedum/search.py
 	scp -r -P 6022 ./geohash.py root@46.101.12.19:/var/www/dumteedum/geohash.py
 	scp -r -P 6022 ./rehash.py root@46.101.12.19:/var/www/dumteedum/rehash.py
+	scp -r -P 6022 ./tweet_update.py root@46.101.12.19:/var/www/dumteedum/tweet_update.py
 	scp -r -P 6022 ./settings.py root@46.101.12.19:/var/www/dumteedum/settings.py
 
 deploy-geo:

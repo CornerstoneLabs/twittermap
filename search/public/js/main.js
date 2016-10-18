@@ -2,6 +2,16 @@ var url = 'data/tweets.json';
 var MAP_NAME = 'TESTING';
 var TWEET_HASHTAG  = '#clmtest';
 
+function getParameterByName(name, url) {
+	if (!url) url = window.location.href;
+	name = name.replace(/[\[\]]/g, "\\$&");
+	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+	    results = regex.exec(url);
+	if (!results) return null;
+	if (!results[2]) return '';
+	return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 //
 // Some way to load data
 //
@@ -117,8 +127,11 @@ function ajax(url, callback, data, x) {
 				plotlayers.push(newMarker);
 			} else {
 				try {
-					newMarker.addTo(map);
 					loadedData.push(newMarker);
+
+					window.setTimeout(function () {
+						newMarker.addTo(map);
+					}, Math.random() * 1000);
 				} catch (e) {
 				}
 			}
@@ -210,7 +223,7 @@ function ajax(url, callback, data, x) {
 		getData();
 	}
 
-	function initmap() {
+	function initmap(defaultLat, defaultLng, override) {
 		//
 		// set up the map
 		//
@@ -235,7 +248,7 @@ function ajax(url, callback, data, x) {
 		//
 		// start the map near Birmingham
 		//
-		map.setView(new L.LatLng(52.47872, -1.90723), 10);
+		map.setView(new L.LatLng(defaultLat, defaultLng), 10);
 		map.addLayer(mapboxLayer);
 
 		var credctrl = L.controlCredits({
@@ -262,23 +275,25 @@ function ajax(url, callback, data, x) {
 			window.setTimeout(refresh, 1000);
  		});
 
-		var locateError = L.popup().setContent('Unable to work out your location.');
-		var lc = L.control.locate({
- 			flyTo: true,
- 			onLocationError: function () {
- 				locateError.setLatLng(map.getCenter()).openOn(map);
- 			},
- 			onLocationOutsideMapBounds: function () { },
- 		}).addTo(map);
+		if (override === false) {
+			var locateError = L.popup().setContent('Unable to work out your location.');
+			var lc = L.control.locate({
+	 			flyTo: false,
+	 			onLocationError: function () {
+	 				locateError.setLatLng(map.getCenter()).openOn(map);
+	 			},
+	 			onLocationOutsideMapBounds: function () { },
+	 		}).addTo(map);
 
-		window.setTimeout(function () {
-	 		lc.start();
-		}, 2000);
+			window.setTimeout(function () {
+		 		lc.start();
+			}, 2000);
+		}
 
 		window.setInterval(refresh, 1000 * 10);
 
 		var html = '<div class="cl-info-panel"><h2><span class="fa fa-info"></span> Pin yourself to the ' + MAP_NAME + ' map</h2><p>Tweet your town & country to ' + TWEET_HASHTAG + '.</p><p>' +
-			'<a href="https://twitter.com/intent/tweet?button_hashtag=#clmtest" class="twitter-hashtag-button" data-show-count="false">Tweet #clmtest</a>' +
+			'<a href="https://twitter.com/intent/tweet?button_hashtag=#clmtest" class="twitter-hashtag-button" data-show-count="false">#clmtest</a>' +
 			'</p></div>';
 
 		var infoPopup = L.popup().setContent(html);
@@ -293,7 +308,11 @@ function ajax(url, callback, data, x) {
 	}
 
 	DomReady.ready(function() {
-		initmap();
+		var lat = getParameterByName('lat') || 52.47872;
+		var lng = getParameterByName('lng') || -1.90723;
+		var override = getParameterByName('o') === 't';
+
+		initmap(lat, lng, override);
 
 		window.setTimeout(function () {
 			refresh();

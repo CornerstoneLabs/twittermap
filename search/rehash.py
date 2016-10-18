@@ -54,19 +54,23 @@ def create_geohashes(output_data):
     hashes = {}
 
     for item in output_data:
-        calculated_geohash = geohash.encode(
-            float(item['lat']),
-            float(item['lon']),
-            settings.GEOHASH_PRECISION
-        )
+        try:
+            calculated_geohash = geohash.encode(
+                float(item['lat']),
+                float(item['lon']),
+                settings.GEOHASH_PRECISION
+            )
 
-        if calculated_geohash not in hashes:
-            hashes[calculated_geohash] = []
-            print('Added hash %s' % calculated_geohash)
+            if calculated_geohash not in hashes:
+                hashes[calculated_geohash] = []
+                print('Added hash %s' % calculated_geohash)
 
-        print('%s hashed %s' % (item['details'], calculated_geohash))
+            print('%s hashed %s' % (item['details'], calculated_geohash))
 
-        hashes[calculated_geohash].append(item)
+            hashes[calculated_geohash].append(item)
+        except Exception as ex:
+            print('FAILURE TO CREATE GEOHASH %s' % ex)
+            print(item)
 
     write_geohashes(hashes)
     write_keys(hashes)
