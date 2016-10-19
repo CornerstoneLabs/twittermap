@@ -8,6 +8,8 @@ TOWN_LONGITUDE = 6
 TOWN_LATITUDE = 5
 TOWN_COUNTRY = 1
 
+ALL_TOWN_BUFFER = None
+
 
 def read_town_data():
     """Read town data from CSV."""
@@ -29,6 +31,38 @@ def read_towns():
     town_file = open('public/data/towns.json', 'rt')
     town_data = json.load(town_file)
     town_file.close()
+
+    return town_data
+
+
+def read_all_towns():
+    """Read town data."""
+    global ALL_TOWN_BUFFER
+
+    if ALL_TOWN_BUFFER:
+        return ALL_TOWN_BUFFER
+
+    town_file = open('public/data/towns.json', 'rt')
+    town_data = json.load(town_file)
+    town_file.close()
+
+    for town in town_data:
+        town[8] = 'GB'
+
+    for additional_town in read_town_data():
+        town_data.append([
+            '',  # 0 junk
+            '',  # 1 junk
+            '',  # 2 junk
+            additional_town[5],  # 3 latitude
+            additional_town[6],  # 4 longitude
+            additional_town[3],  # 5 town
+            additional_town[3],  # 6 town
+            '',  # 7 junk
+            additional_town[1],  # 8 country
+        ])
+
+    ALL_TOWN_BUFFER = town_data
 
     return town_data
 
@@ -61,12 +95,8 @@ def lookup_town_from_json(search):
 
 def lookup_town(search):
     """Look for a town."""
-    search = search.lower()
-
     if search.find(',') != -1:
         search = search.split(',')[0]
-
-    search = search.strip()
 
     found = []
 
@@ -93,6 +123,70 @@ def lookup_town(search):
     return found
 
 
+def match_weight(compare_name, search):
+    """Match with weight."""
+    compare_parts = compare_name.split()
+    compare_parts = set(compare_parts)
+
+    score = 0
+    fails = 0
+
+    for word in search:
+        if word in compare_parts:
+            score += 100
+
+        if word not in compare_parts:
+            fails += 1
+
+    # if fails == 0:
+    #     score = 1000
+    #     input()
+    # else:
+    #     score = (len(search) - fails) * 1000
+
+    # if score > 0 and fails != 0:
+    #     print('Score: %s fails %s' % (score, fails))
+    #     print(compare_parts, search)
+    #     input()
+
+    fail_negative = ((float(fails) / float(len(search))) * 1000)
+
+    return 1000 - fail_negative
+
+
+def lookup_words(search):
+    """Lookup multiple words."""
+    towns = read_all_towns()
+    found = []
+
+    for town in towns:
+        match = False
+
+        compare_name = town[5].lower().strip()
+        compare_name += ' ' + town[6].lower().strip()
+        compare_name += ' ' + town[8].lower().strip()
+
+        score = match_weight(compare_name, search)
+
+        breakpoint = 100
+
+        if score >= breakpoint:
+            match = True
+
+        if match:
+            found.append({
+                'latitude': town[3],
+                'longitude': town[4],
+                'name': town[6],
+                'country': town[8],
+                'weight': score
+            })
+
+    found.sort(key=lambda item: item['weight'])
+    found.reverse()
+    return found
+
+
 def ignore_word(word):
     """Work out whether to ignore word."""
     ignore = False
@@ -100,17 +194,35 @@ def ignore_word(word):
     if word.startswith('#'):
         ignore = True
 
+    if word == ',':
+        ignore = True
+
     return ignore
+
+
+def sanitize_words(words):
+    """Return a list of words we're going to search on."""
+    result = []
+
+    for word in words:
+        if not ignore_word(word):
+            result.append(word.lower().strip())
+
+    return result
 
 
 def lookup_location(text):
     """Lookup the town."""
     split_words = text.split(' ')
 
+    search = sanitize_words(split_words)
+
     town_list = []
-    for search_town in split_words:
-        if not ignore_word(search_town):
-            town_list = town_list + lookup_town(search_town)
+    lookup_towns = lookup_words(search)
+    town_list = town_list + lookup_towns
+
+    # for word in search:
+    #    town_list = town_list + lookup_town(word)
 
     if len(town_list) > 0:
         return town_list[0]

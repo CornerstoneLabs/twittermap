@@ -37,6 +37,7 @@ def reply_to_tweet(tweet_id, username, message):
     response = reply_to_tweet(788302444249874432, 'adamauckland', 'Me too!')
 
     """
+    username = 'adamauckland'
     twitter = initialise()
     twitter.update_status(
         status='@%s %s' % (username, message),
