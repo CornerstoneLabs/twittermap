@@ -168,36 +168,22 @@ function ajax(url, callback, data, x) {
 
 				index++;
 
-				//if (typeof hashes[index] !== 'undefined' || true) {
-					var localUrl = 'data/tweets-' + hash + '.json';
+				var localUrl = 'data/tweets-' + hash + '.json';
 
-					//if (typeof caches[localUrl] === 'undefined') {
-						// if (hashIndex.filter(function (item) {
-						// 	return (item == hash);
-						// }).length !== 0) {
-							ajax(localUrl, function (stringData, xhrRequest) {
-								var data = [];
+				function onAjaxSuccess(stringData, xhrRequest) {
+					var data = [];
 
-								try {
-									data = JSON.parse(stringData);
-								} catch (e) {
+					try {
+						data = JSON.parse(stringData);
+					} catch (e) {
 
-								}
-								// remember this data
-								//caches[localUrl] = data;
-								onDataLoaded(data, function() {
-									done();
-								});
-							});
-						// } else {
-						// 	next();
-						// }
-					// } else {
-					// 	onDataLoaded(caches[localUrl], function() {
-					// 		done();
-					// 	});
-					// }
-			//	}
+					}
+					onDataLoaded(data, function() {
+						done();
+					});
+				}
+
+				ajax(localUrl, onAjaxSuccess);
 			} else {
 				done();
 			}
@@ -217,8 +203,6 @@ function ajax(url, callback, data, x) {
 		var maxLon = bounds.getEast();
 
 		hashes = geohash.bboxes(minLat, minLon, maxLat, maxLon, 3);
-
-		//console.log(hashes);
 
 		getData();
 	}
@@ -292,7 +276,9 @@ function ajax(url, callback, data, x) {
 
 		window.setInterval(refresh, 1000 * 10);
 
-		var html = '<div class="cl-info-panel"><h2><span class="fa fa-info"></span> Pin yourself to the ' + MAP_NAME + ' map</h2><p>Tweet your town & country to ' + TWEET_HASHTAG + '.</p><p>' +
+		var html = '<div class="cl-info-panel"><h2><span class="fa fa-info"></span> Pin yourself to the ' +
+			MAP_NAME +
+			' map</h2><p>Tweet your town & country to ' + TWEET_HASHTAG + '.</p><p>' +
 			'<a href="https://twitter.com/intent/tweet?button_hashtag=#clmtest" class="twitter-hashtag-button" data-show-count="false">#clmtest</a>' +
 			'</p></div>';
 
