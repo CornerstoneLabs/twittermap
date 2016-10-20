@@ -17,3 +17,7 @@ COUNTRY_DATA = os.environ['COUNTRY_DATA']
 GEOHASH_PRECISION = 3
 if 'GEOHASH_PRECISION' in os.environ:
     GEOHASH_PRECISION = int(os.environ['GEOHASH_PRECISION'])
+WHITELIST = [
+    'adamauckland',
+    'kaelifa',
+]

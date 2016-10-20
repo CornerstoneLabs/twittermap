@@ -37,7 +37,12 @@ def reply_to_tweet(tweet_id, username, message):
     response = reply_to_tweet(788302444249874432, 'adamauckland', 'Me too!')
 
     """
-    username = 'adamauckland'
+    if len(settings.WHITELIST) > 0:
+        print('Whitelist activated.')
+        if username not in settings.WHITELIST:
+            print('%s not in whitelist, skipping.' % username)
+            return
+
     twitter = initialise()
     twitter.update_status(
         status='@%s %s' % (username, message),

@@ -10,7 +10,7 @@ def add_tweet_enqueue_reply(output_obj):
     """Enqueue the reply now we've worked out where it's for."""
     reply_queue = dataqueue.DataQueue('tweet-reply')
 
-    link = 'https://www.cornerstonelabs.co.uk/assets/tweetmap?lat=%s&lng=%s&o=t' % (
+    link = 'https://tweetmap.cornerstonelabs.co.uk/?lat=%s&lng=%s&o=t' % (
         output_obj['lat'],
         output_obj['lon']
     )
@@ -18,6 +18,7 @@ def add_tweet_enqueue_reply(output_obj):
     reply_data = {
         'in_reply_to_status_id': output_obj['id'],
         'screen_name': output_obj['screen_name'],
+        'link': link,
         'status': "you're on the map! %s" % link
     }
 
