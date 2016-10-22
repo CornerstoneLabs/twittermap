@@ -4,8 +4,9 @@ import json
 import os
 import shutil
 import errno
+import settings
 
-DATA_STORE = os.path.join(os.path.abspath('.'), 'datastores')
+DATA_STORE = os.path.join(settings.DATASTORE_PATH, 'datastores')
 
 
 def make_sure_path_exists(path):
@@ -81,6 +82,24 @@ class DataQueue(object):
         file_handle.close()
 
         return data
+
+    def find(self, id):
+        """Get the item no matter which stream it's gone in."""
+        seek_paths = [
+            self.PENDING_PATH,
+            self.SUCCESS_PATH,
+            self.FAIL_PATH
+        ]
+        for path in seek_paths:
+            filename = os.path.join(self.PENDING_PATH, '%s.json' % id)
+
+            if os.path.exists(filename):
+                file_handle = open(filename, 'rt')
+                data = json.load(file_handle)
+                file_handle.close()
+
+                return data
+        return None
 
     def next(self):
         """Get the next file from pending."""

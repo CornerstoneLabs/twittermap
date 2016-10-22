@@ -44,7 +44,7 @@ def reply_to_tweet(tweet_id, username, message):
             return
 
     twitter = initialise()
-    twitter.update_status(
+    return twitter.update_status(
         status='@%s %s' % (username, message),
         in_reply_to_status_id=tweet_id
     )

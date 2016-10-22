@@ -61,6 +61,7 @@ function ajax(url, callback, data, x) {
 	var loadedData = [];
 	var USE_CLUSTERING = false;
 	var hashIndex = [];
+	var markerSource = [];
 
 	function twitterBoot () {
 		window.twttr.widgets.load();
@@ -75,7 +76,7 @@ function ajax(url, callback, data, x) {
 
 	function countMarker(compareData) {
 		var count = loadedData.filter(function (item) {
-			return (item.data.lat === compareData.lat) && (item.data.lon === compareData.lon);
+			return (item.data.id === compareData.id) && (item.data.id === compareData.id);
 		}).length;
 
 		return count;
@@ -84,6 +85,33 @@ function ajax(url, callback, data, x) {
 	function fitBounds () {
 		var group = new L.featureGroup(plotlayers);
 		map.fitBounds(group.getBounds());
+	}
+
+	function sweepMarkers () {
+		markerSource.forEach(function (marker) {
+			var clobbered = markerSource.filter(function (innerMarker) {
+					var value = (innerMarker.data.lat == marker.data.lat)
+						&& (innerMarker.data.lng == marker.data.lng)
+						&& (innerMarker.data.id !== marker.data.id);
+
+					return value;
+				});
+
+			if (clobbered.length > 0) {
+				if (marker.data.moved === true) {
+					// only move them once
+				} else {
+					var point = map.latLngToLayerPoint(marker.getLatLng());
+
+					point.x += (Math.random() * 100) - 50;
+					point.y += (Math.random() * 100) - 50;
+
+					marker.setLatLng(map.layerPointToLatLng(point));
+
+					marker.data.moved = true;
+				}
+			}
+		});
 	}
 
 	function addMarker (markerData) {
@@ -122,6 +150,8 @@ function ajax(url, callback, data, x) {
 
 			newMarker.bindPopup(popupHtml);
 
+			markerSource.push(newMarker);
+
 			if (USE_CLUSTERING === true) {
 				markerGroup.addLayer(newMarker);
 				plotlayers.push(newMarker);
@@ -144,6 +174,8 @@ function ajax(url, callback, data, x) {
 			// check exists
 			addMarker(data[i]);
 		}
+
+		sweepMarkers();
 
 		callback();
 	}

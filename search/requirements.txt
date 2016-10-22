@@ -2,3 +2,4 @@ TwitterSearch
 python-dotenv
 Geohash
 Twython
+editdistance

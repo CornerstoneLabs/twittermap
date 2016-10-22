@@ -25,14 +25,52 @@ def add_tweet_enqueue_reply(output_obj):
     reply_queue.add(reply_data, output_obj['id'])
 
 
+def add_tweet_enqueue_which_country(output_obj, question):
+    """Enqueue the reply now we've worked out where it's for."""
+    reply_queue = dataqueue.DataQueue('tweet-reply')
+
+    reply_data = {
+        'in_reply_to_status_id': output_obj['id'],
+        'screen_name': output_obj['screen_name'],
+        'status': question
+    }
+
+    reply_queue.add(reply_data, output_obj['id'])
+
+
 def geocode_tweet(output_data, tweet):
     """Add the tweet to data."""
     print('\n%s\n' % tweet)
-    print('%s tweeted: %s %s ' % (tweet['user']['name'], tweet['text'], tweet['user']['location']))
+    print('%s tweeted: %s \nuser location %s ' % (tweet['user']['name'], tweet['text'], tweet['user']['location']))
 
-    town = location.lookup_location(tweet['text'])
+    text = tweet['text']
+    text = text.replace('@CLbotbot', '')
+    text = text.strip()
 
-    if town:
+    try:
+        reply_value = int(text)
+    except Exception as ex:
+        print('Unable to parse %s' % text)
+        print(ex)
+        return False
+
+    reply_tweet = tweet['in_reply_to_status_id']
+    tweet_reply_queue = dataqueue.DataQueue('tweet-reply-sent')
+    print('Finding reply tweet: %s' % reply_tweet)
+    original = tweet_reply_queue.find(reply_tweet)
+
+    print('Original tweet: %s' % original)
+    answers = original['answers']
+    town = original['details']
+    country_code = answers[reply_value - 1]
+
+    print ('Got country code %s, town %s' % (country_code, town))
+    towns = location.lookup_town_levenshtein(town, country_code)
+
+    if len(towns) > 0:
+        town = towns[0]
+        print('Using %s' % (town['name']))
+
         latitude = town['latitude']
         longitude = town['longitude']
 
@@ -54,14 +92,16 @@ def geocode_tweet(output_data, tweet):
         output_data.append(output_obj)
 
         return True
-    else:
+
+    if len(towns) == 0:
         print('Could not find town')
         return False
 
 
 def incoming_tweet_queue_run(output_data):
     """Handle incoming tweets."""
-    hashtag_location_tweets = dataqueue.DataQueue('tweet-hashtag-location')
+    hashtag_location_tweets = dataqueue.DataQueue('tweet-reply-country-location')
+    hashtag_location_tweets.requeue()
 
     tweet_id, tweet = hashtag_location_tweets.next()
 
