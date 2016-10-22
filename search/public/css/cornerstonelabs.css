@@ -40,6 +40,15 @@
     margin-right: 4px;
 }
 
+.leaflet-credits-control {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.leaflet-credits-control:hover {
+    opacity: 1;
+}
+
 /* info button top right */
 .easy-button-button.leaflet-bar-part.leaflet-interactive {
     background-color: #242d3d;

@@ -2,6 +2,16 @@ var url = 'data/tweets.json';
 var MAP_NAME = 'TESTING';
 var TWEET_HASHTAG  = '#clmtest';
 
+function getParameterByName(name, url) {
+	if (!url) url = window.location.href;
+	name = name.replace(/[\[\]]/g, "\\$&");
+	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+	    results = regex.exec(url);
+	if (!results) return null;
+	if (!results[2]) return '';
+	return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 //
 // Some way to load data
 //
@@ -51,6 +61,7 @@ function ajax(url, callback, data, x) {
 	var loadedData = [];
 	var USE_CLUSTERING = false;
 	var hashIndex = [];
+	var markerSource = [];
 
 	function twitterBoot () {
 		window.twttr.widgets.load();
@@ -65,7 +76,7 @@ function ajax(url, callback, data, x) {
 
 	function countMarker(compareData) {
 		var count = loadedData.filter(function (item) {
-			return (item.data.lat === compareData.lat) && (item.data.lon === compareData.lon);
+			return (item.data.id === compareData.id) && (item.data.id === compareData.id);
 		}).length;
 
 		return count;
@@ -74,6 +85,33 @@ function ajax(url, callback, data, x) {
 	function fitBounds () {
 		var group = new L.featureGroup(plotlayers);
 		map.fitBounds(group.getBounds());
+	}
+
+	function sweepMarkers () {
+		markerSource.forEach(function (marker) {
+			var clobbered = markerSource.filter(function (innerMarker) {
+					var value = (innerMarker.data.lat == marker.data.lat)
+						&& (innerMarker.data.lng == marker.data.lng)
+						&& (innerMarker.data.id !== marker.data.id);
+
+					return value;
+				});
+
+			if (clobbered.length > 0) {
+				if (marker.data.moved === true) {
+					// only move them once
+				} else {
+					var point = map.latLngToLayerPoint(marker.getLatLng());
+
+					point.x += (Math.random() * 100) - 50;
+					point.y += (Math.random() * 100) - 50;
+
+					marker.setLatLng(map.layerPointToLatLng(point));
+
+					marker.data.moved = true;
+				}
+			}
+		});
 	}
 
 	function addMarker (markerData) {
@@ -112,13 +150,18 @@ function ajax(url, callback, data, x) {
 
 			newMarker.bindPopup(popupHtml);
 
+			markerSource.push(newMarker);
+
 			if (USE_CLUSTERING === true) {
 				markerGroup.addLayer(newMarker);
 				plotlayers.push(newMarker);
 			} else {
 				try {
-					newMarker.addTo(map);
 					loadedData.push(newMarker);
+
+					window.setTimeout(function () {
+						newMarker.addTo(map);
+					}, Math.random() * 1000);
 				} catch (e) {
 				}
 			}
@@ -131,6 +174,8 @@ function ajax(url, callback, data, x) {
 			// check exists
 			addMarker(data[i]);
 		}
+
+		sweepMarkers();
 
 		callback();
 	}
@@ -155,36 +200,22 @@ function ajax(url, callback, data, x) {
 
 				index++;
 
-				//if (typeof hashes[index] !== 'undefined' || true) {
-					var localUrl = 'data/tweets-' + hash + '.json';
+				var localUrl = 'data/tweets-' + hash + '.json';
 
-					//if (typeof caches[localUrl] === 'undefined') {
-						// if (hashIndex.filter(function (item) {
-						// 	return (item == hash);
-						// }).length !== 0) {
-							ajax(localUrl, function (stringData, xhrRequest) {
-								var data = [];
+				function onAjaxSuccess(stringData, xhrRequest) {
+					var data = [];
 
-								try {
-									data = JSON.parse(stringData);
-								} catch (e) {
+					try {
+						data = JSON.parse(stringData);
+					} catch (e) {
 
-								}
-								// remember this data
-								//caches[localUrl] = data;
-								onDataLoaded(data, function() {
-									done();
-								});
-							});
-						// } else {
-						// 	next();
-						// }
-					// } else {
-					// 	onDataLoaded(caches[localUrl], function() {
-					// 		done();
-					// 	});
-					// }
-			//	}
+					}
+					onDataLoaded(data, function() {
+						done();
+					});
+				}
+
+				ajax(localUrl, onAjaxSuccess);
 			} else {
 				done();
 			}
@@ -205,12 +236,10 @@ function ajax(url, callback, data, x) {
 
 		hashes = geohash.bboxes(minLat, minLon, maxLat, maxLon, 3);
 
-		//console.log(hashes);
-
 		getData();
 	}
 
-	function initmap() {
+	function initmap(defaultLat, defaultLng, override) {
 		//
 		// set up the map
 		//
@@ -235,7 +264,7 @@ function ajax(url, callback, data, x) {
 		//
 		// start the map near Birmingham
 		//
-		map.setView(new L.LatLng(52.47872, -1.90723), 10);
+		map.setView(new L.LatLng(defaultLat, defaultLng), 10);
 		map.addLayer(mapboxLayer);
 
 		var credctrl = L.controlCredits({
@@ -262,23 +291,27 @@ function ajax(url, callback, data, x) {
 			window.setTimeout(refresh, 1000);
  		});
 
-		var locateError = L.popup().setContent('Unable to work out your location.');
-		var lc = L.control.locate({
- 			flyTo: true,
- 			onLocationError: function () {
- 				locateError.setLatLng(map.getCenter()).openOn(map);
- 			},
- 			onLocationOutsideMapBounds: function () { },
- 		}).addTo(map);
+		if (override === false) {
+			var locateError = L.popup().setContent('Unable to work out your location.');
+			var lc = L.control.locate({
+	 			flyTo: false,
+	 			onLocationError: function () {
+	 				locateError.setLatLng(map.getCenter()).openOn(map);
+	 			},
+	 			onLocationOutsideMapBounds: function () { },
+	 		}).addTo(map);
 
-		window.setTimeout(function () {
-	 		lc.start();
-		}, 2000);
+			window.setTimeout(function () {
+		 		lc.start();
+			}, 2000);
+		}
 
 		window.setInterval(refresh, 1000 * 10);
 
-		var html = '<div class="cl-info-panel"><h2><span class="fa fa-info"></span> Pin yourself to the ' + MAP_NAME + ' map</h2><p>Tweet your town & country to ' + TWEET_HASHTAG + '.</p><p>' +
-			'<a href="https://twitter.com/intent/tweet?button_hashtag=#clmtest" class="twitter-hashtag-button" data-show-count="false">Tweet #clmtest</a>' +
+		var html = '<div class="cl-info-panel"><h2><span class="fa fa-info"></span> Pin yourself to the ' +
+			MAP_NAME +
+			' map</h2><p>Tweet your town & country to ' + TWEET_HASHTAG + '.</p><p>' +
+			'<a href="https://twitter.com/intent/tweet?button_hashtag=#clmtest" class="twitter-hashtag-button" data-show-count="false">#clmtest</a>' +
 			'</p></div>';
 
 		var infoPopup = L.popup().setContent(html);
@@ -293,7 +326,11 @@ function ajax(url, callback, data, x) {
 	}
 
 	DomReady.ready(function() {
-		initmap();
+		var lat = getParameterByName('lat') || 52.47872;
+		var lng = getParameterByName('lng') || -1.90723;
+		var override = getParameterByName('o') === 't';
+
+		initmap(lat, lng, override);
 
 		window.setTimeout(function () {
 			refresh();
