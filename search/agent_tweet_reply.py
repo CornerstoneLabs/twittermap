@@ -2,6 +2,7 @@
 import time
 import tweet_update
 import dataqueue
+import events
 
 
 def log(text):
@@ -33,6 +34,13 @@ def tweet_queue_run():
 
             sent_queue = dataqueue.DataQueue('tweet-reply-sent')
             sent_queue.add(reply_data, result['id'])
+
+            events.store(
+                'TWEET_REPLY_SENT',
+                result['id'],
+                reply_data,
+                reply_data['parent']
+            )
         except Exception as ex:
             log('X %s' % reply_id)
             reply_queue.fail(reply_id, str(ex))

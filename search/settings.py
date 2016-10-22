@@ -48,3 +48,21 @@ WHITELIST = [
     'kaelifa',
     'j3rryj0hns0n1',
 ]
+
+COUCHDB_SERVER = environment_value('COUCHDB_SERVER')
+COUCHDB_DATABASE = environment_value('COUCHDB_DATABASE')
+
+BOOTSTRAP_VIEWS = {
+    '_design/ancestor': {
+        '_id': '_design/ancestor',
+        'views': {
+            'find': {
+                'map': 'function(doc){ if (doc.parent) { emit(doc.metakey, doc.parent);} else { emit(doc.metakey, doc._id); } }'
+            },
+            'thread': {
+                'map': 'function(doc){ if (doc.parent) { emit(doc.parent, doc._id);} else { emit(doc._id, doc._id); } }'
+            }
+        }
+    }
+}
+

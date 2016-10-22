@@ -8,6 +8,7 @@ import dataqueue
 import datetime
 import json
 import settings
+import events
 
 
 def get_max_id():
@@ -39,6 +40,8 @@ def store_tweet(tweet):
     """Store the tweet for backup."""
     reply_queue = dataqueue.DataQueue('tweet-hashtag-location')
     reply_queue.add(tweet, tweet['id'])
+
+    events.store('TWEET_RECEIVED', tweet['id'], tweet, None)
 
     output_file = open('public/data/%s.tweetjson' % tweet['id'], 'wt')
     output_file.write('%s' % json.dumps(tweet))
