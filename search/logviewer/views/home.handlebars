@@ -9,14 +9,17 @@
 			<a href="/">Home</a>
 		</div>
 	</div>
+	<hr/>
 	<div class="row">
 		<div class="col-xs-12">
 			<form method="post">
+				<label>Search</label>
 				<input type="text" name="key" id="key" value="{{ key }}" />
 				<button type="submit" class="btn btn-default">Look up.</button>
 			</form>
 		</div>
 	</div>
+	<hr/>
 	<div class="row">
 		<div class="col-xs-12">
 			{{ rows }} rows.
@@ -30,8 +33,6 @@
 					    {{> (lookup . 'event_type') }}
 				    </div>
 				</div>
-
-
 				<span style="display: none;">{{json this }}</span>
 			</div>
 		{{/each}}
@@ -39,11 +40,14 @@
 	{{#each startTweets }}
 		<div class="row">
 			<div class="col-xs-12">
-				<a href="?truekey={{ this.id }}">
-					{{ this.value }}
-				</a>
+				<div class="panel panel-default">
+				    <div class="panel-body">
+						<a href="?truekey={{ this.id }}">
+							{{ this.value }}
+						</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	{{/each}}
-
 </div>

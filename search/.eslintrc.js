@@ -19,7 +19,8 @@ module.exports = {
     "globals": {
         "angular": 1,
         "module": 1,
-        "_": 1
+        "_": 1,
+        "require": 1
     },
     "extends": "eslint:recommended"
 };

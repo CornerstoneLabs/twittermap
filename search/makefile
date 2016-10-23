@@ -17,6 +17,7 @@ deploy:
 	scp -r ./dataqueue.py root@138.68.153.64:/var/www/tweetmap/dataqueue.py
 	scp -r ./geohash.py root@138.68.153.64:/var/www/tweetmap/geohash.py
 	scp -r ./events.py root@138.68.153.64:/var/www/tweetmap/events.py
+	scp -r ./agents root@138.68.153.64:/var/www/tweetmap/agents
 	scp -r ./location.py root@138.68.153.64:/var/www/tweetmap/location.py
 	scp -r ./rehash.py root@138.68.153.64:/var/www/tweetmap/rehash.py
 	scp -r ./settings.py root@138.68.153.64:/var/www/tweetmap/settings.py
