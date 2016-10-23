@@ -3,10 +3,11 @@ import dataqueue
 import datetime
 import json
 import location
+import events
 from rehash import create_geohashes_please
 
 
-def add_tweet_enqueue_reply(output_obj):
+def add_tweet_enqueue_reply(output_obj, parent):
     """Enqueue the reply now we've worked out where it's for."""
     reply_queue = dataqueue.DataQueue('tweet-reply')
 
@@ -19,20 +20,22 @@ def add_tweet_enqueue_reply(output_obj):
         'in_reply_to_status_id': output_obj['id'],
         'screen_name': output_obj['screen_name'],
         'link': link,
-        'status': "you're on the map! %s" % link
+        'status': "you're on the map! %s" % link,
+        'parent': parent,
     }
 
     reply_queue.add(reply_data, output_obj['id'])
 
 
-def add_tweet_enqueue_which_country(output_obj, question):
+def add_tweet_enqueue_which_country(output_obj, question, parent):
     """Enqueue the reply now we've worked out where it's for."""
     reply_queue = dataqueue.DataQueue('tweet-reply')
 
     reply_data = {
         'in_reply_to_status_id': output_obj['id'],
         'screen_name': output_obj['screen_name'],
-        'status': question
+        'status': question,
+        'parent': parent,
     }
 
     reply_queue.add(reply_data, output_obj['id'])
@@ -84,12 +87,19 @@ def geocode_tweet(output_data, tweet):
         output_obj['id'] = tweet['id']
         output_obj['id_str'] = tweet['id_str']
 
-        add_tweet_enqueue_reply(output_obj)
+        add_tweet_enqueue_reply(output_obj, events.find_metakey_id(tweet['id']))
 
         geolocated_tweet_queue = dataqueue.DataQueue('tweet-geocoded')
         geolocated_tweet_queue.add(output_obj, output_obj['id'])
 
         output_data.append(output_obj)
+
+        events.store(
+            'TWEET_GEOCODED',
+            None,
+            output_obj,
+            events.find_metakey_id(tweet['id'])
+        )
 
         return True
 

@@ -88,6 +88,13 @@ def geocode_tweet(output_data, tweet):
         return True
 
     if len(unique_countries) == 0:
+        events.store(
+            'GEOCODE_TOWN_NOT_FOUND',
+            None,
+            {},
+            events.find_metakey_id(tweet['id'])
+        )
+
         print('Could not find town')
         return False
 

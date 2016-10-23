@@ -50,7 +50,7 @@ def store(event_type, metakey, data, parent=None):
     return save(payload)
 
 
-def find_thread(parent_id):
+def thread(parent_id):
     """Look for all events for a thread."""
     results = database.iterview('ancestor/thread', 10, key=str(parent_id))
 
@@ -84,4 +84,3 @@ def bootstrap():
         if not parent_view or True:
             save(settings.BOOTSTRAP_VIEWS[key])
 
-bootstrap()

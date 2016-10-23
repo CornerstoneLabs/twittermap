@@ -60,9 +60,19 @@ BOOTSTRAP_VIEWS = {
                 'map': 'function(doc){ if (doc.parent) { emit(doc.metakey, doc.parent);} else { emit(doc.metakey, doc._id); } }'
             },
             'thread': {
-                'map': 'function(doc){ if (doc.parent) { emit(doc.parent, doc._id);} else { emit(doc._id, doc._id); } }'
+                'map': 'function(doc){ if (doc.parent) { emit(doc.parent, doc);} else { emit(doc._id, doc); } }'
             }
         }
-    }
+    },
+    '_design/event': {
+        '_id': '_design/event',
+        'views': {
+            'all': {
+                'map': 'function(doc){ emit(doc.event_type, doc); }'
+            },
+            'datetime': {
+                'map': 'function(doc){ emit(doc.event_type, doc.datetime); }'
+            }
+        }
+    },
 }
-

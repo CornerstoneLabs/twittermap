@@ -5,6 +5,7 @@ import dataqueue
 import datetime
 import json
 import settings
+import events
 
 
 def initialise():
@@ -48,6 +49,16 @@ def store_tweet(tweet):
     """Store the tweet for backup."""
     reply_queue = dataqueue.DataQueue('tweet-reply-country-location')
     reply_queue.add(tweet, tweet['id'])
+
+    #
+    # We need to link this tweet to the reply
+    #
+    events.store(
+        'TWEET_MENTIONED',
+        tweet['id'],
+        tweet,
+        events.find_metakey_id(tweet['in_reply_to_status_id'])
+    )
 
 
 def scan_twitter(max_id):
