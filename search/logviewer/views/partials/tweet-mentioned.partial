@@ -1,0 +1,9 @@
+<div>
+	{{ this.datetime }} Tweet mentioned.
+</div>
+<div>
+	<div>@{{ this.data.user.screen_name }}</div>
+	<code>{{ this.data.text }}</code>
+</div>
+
+

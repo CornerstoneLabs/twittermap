@@ -1,0 +1,49 @@
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+			<h1>Log viewer.</h1>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<a href="/">Home</a>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<form method="post">
+				<input type="text" name="key" id="key" value="{{ key }}" />
+				<button type="submit" class="btn btn-default">Look up.</button>
+			</form>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			{{ rows }} rows.
+		</div>
+	</div>
+	<div class="row">
+		{{#each data}}
+			<div class="col-xs-12">
+				<div class="panel panel-default">
+				    <div class="panel-body">
+					    {{> (lookup . 'event_type') }}
+				    </div>
+				</div>
+
+
+				<span style="display: none;">{{json this }}</span>
+			</div>
+		{{/each}}
+	</div>
+	{{#each startTweets }}
+		<div class="row">
+			<div class="col-xs-12">
+				<a href="?truekey={{ this.id }}">
+					{{ this.value }}
+				</a>
+			</div>
+		</div>
+	{{/each}}
+
+</div>

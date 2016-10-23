@@ -1,0 +1,8 @@
+<div>
+	{{ this.datetime }} Tweet reply sent.
+</div>
+<div>
+	<div>@{{ this.data.screen_name }}</div>
+	<code>{{ this.data.status }}</code>
+</div>
+

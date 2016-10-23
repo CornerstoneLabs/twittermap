@@ -1,0 +1,12 @@
+<div>
+	{{ this.datetime }} Tweet geocoded.
+</div>
+<div>
+	Latitude: {{ this.data.lat }}<br/>
+	Longitude: {{ this.data.lon }}
+</div>
+<div>
+	<code>{{ json this }} </code>
+
+</div>
+
