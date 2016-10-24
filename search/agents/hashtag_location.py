@@ -1,10 +1,8 @@
 """Geocode incoming tweets."""
 import dataqueue
-import datetime
 import json
 import location
 import events
-from rehash import create_geohashes_please
 
 
 def add_tweet_enqueue_reply(output_obj, parent):
@@ -43,47 +41,76 @@ def add_tweet_enqueue_which_country(output_obj, question, answers, parent):
     reply_queue.add(reply_data, output_obj['id'])
 
 
+def store_geocoded_tweet(output_data, town, tweet):
+    """Store the geocoded tweet."""
+    latitude = town['latitude']
+    longitude = town['longitude']
+
+    output_obj = {}
+    output_obj['name'] = '%s' % tweet['user']['name']
+    output_obj['screen_name'] = '%s' % tweet['user']['screen_name']
+    output_obj['lon'] = longitude
+    output_obj['lat'] = latitude
+    output_obj['avatar'] = tweet['user']['profile_image_url_https']
+    output_obj['details'] = town['name']
+    output_obj['id'] = tweet['id']
+    output_obj['id_str'] = tweet['id_str']
+
+    add_tweet_enqueue_reply(output_obj, events.find_metakey_id(tweet['id']))
+
+    geolocated_tweet_queue = dataqueue.DataQueue('tweet-geocoded')
+    geolocated_tweet_queue.add(output_obj, output_obj['id'])
+
+    output_data.append(output_obj)
+
+    events.store(
+        'TWEET_GEOCODED',
+        None,
+        output_obj,
+        events.find_metakey_id(tweet['id'])
+    )
+
+
+def request_town_confirmation(unique_countries, towns, tweet):
+    """Request which town from the user."""
+    town_name = towns[0]['name']
+    question = '%s\n' % town_name
+
+    for country in range(len(unique_countries)):
+        question += '\n%s %s' % (country + 1, location.country(unique_countries[country]))
+
+    if len(question) + len(tweet['user']['screen_name']) + 2 + len(town_name) >= 140:
+        question = question[:140 - len(town_name) - (len(tweet['user']['screen_name']) + 2)]
+
+    output_obj = {}
+    output_obj['id'] = tweet['id']
+    output_obj['id_str'] = tweet['id_str']
+    output_obj['name'] = '%s' % tweet['user']['name']
+    output_obj['screen_name'] = '%s' % tweet['user']['screen_name']
+    output_obj['details'] = town_name
+    answers = []
+    for country in unique_countries:
+        answers.append(country)
+
+    add_tweet_enqueue_which_country(
+        output_obj,
+        question,
+        answers,
+        events.find_metakey_id(tweet['id'])
+    )
+
+
 def geocode_tweet(output_data, tweet):
     """Add the tweet to data."""
-    print('\n%s\n' % tweet)
-    print('%s tweeted: %s %s ' % (tweet['user']['name'], tweet['text'], tweet['user']['location']))
-
     tweet_text = ' '.join(location.sanitize_words(tweet['text'].split()))
 
     towns = location.lookup_town_levenshtein(tweet_text, None)
-    # towns = location.lookup_location(tweet['text'])
     unique_countries = list(set([town['country'] for town in towns]))
     unique_countries.sort()
 
     if len(unique_countries) == 1:
         town = towns[0]
-
-        latitude = town['latitude']
-        longitude = town['longitude']
-
-        output_obj = {}
-        output_obj['name'] = '%s' % tweet['user']['name']
-        output_obj['screen_name'] = '%s' % tweet['user']['screen_name']
-        output_obj['lon'] = longitude
-        output_obj['lat'] = latitude
-        output_obj['avatar'] = tweet['user']['profile_image_url_https']
-        output_obj['details'] = town['name']
-        output_obj['id'] = tweet['id']
-        output_obj['id_str'] = tweet['id_str']
-
-        add_tweet_enqueue_reply(output_obj, events.find_metakey_id(tweet['id']))
-
-        geolocated_tweet_queue = dataqueue.DataQueue('tweet-geocoded')
-        geolocated_tweet_queue.add(output_obj, output_obj['id'])
-
-        output_data.append(output_obj)
-
-        events.store(
-            'TWEET_GEOCODED',
-            None,
-            output_obj,
-            events.find_metakey_id(tweet['id'])
-        )
+        store_geocoded_tweet(output_data, town, tweet)
 
         return True
 
@@ -99,31 +126,7 @@ def geocode_tweet(output_data, tweet):
         return False
 
     if len(unique_countries) > 1:
-        town_name = towns[0]['name']
-        question = '%s\n' % town_name
-
-        for country in range(len(unique_countries)):
-            question += '\n%s %s' % (country + 1, location.country(unique_countries[country]))
-
-        if len(question) + len(tweet['user']['screen_name']) + 2 + len(town_name) >= 140:
-            question = question[:140 - len(town_name) - (len(tweet['user']['screen_name']) + 2)]
-
-        output_obj = {}
-        output_obj['id'] = tweet['id']
-        output_obj['id_str'] = tweet['id_str']
-        output_obj['name'] = '%s' % tweet['user']['name']
-        output_obj['screen_name'] = '%s' % tweet['user']['screen_name']
-        output_obj['details'] = town_name
-        answers = []
-        for country in unique_countries:
-            answers.append(country)
-
-        add_tweet_enqueue_which_country(
-            output_obj,
-            question,
-            answers,
-            events.find_metakey_id(tweet['id'])
-        )
+        request_town_confirmation(unique_countries, towns, tweet)
 
         return True
 

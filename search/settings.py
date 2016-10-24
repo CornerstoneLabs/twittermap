@@ -15,7 +15,7 @@ def environment_value(key, default=None):
     else:
         return default
 
-SEARCH = ['#clmtest']
+SEARCH = [environment_value('HASHTAG')]
 
 #
 # Twitter settings.

@@ -4,3 +4,4 @@ Geohash
 Twython
 editdistance
 couchdb
+fabric3
