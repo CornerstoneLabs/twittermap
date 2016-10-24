@@ -3,13 +3,14 @@ import dataqueue
 import json
 import location
 import events
+import settings
 
 
 def add_tweet_enqueue_reply(output_obj, parent):
     """Enqueue the reply now we've worked out where it's for."""
     reply_queue = dataqueue.DataQueue('tweet-reply')
 
-    link = 'https://tweetmap.cornerstonelabs.co.uk/?lat=%s&lng=%s&o=t' % (
+    link = settings.WEB_LINK + '/?lat=%s&lng=%s&o=t' % (
         output_obj['lat'],
         output_obj['lon']
     )

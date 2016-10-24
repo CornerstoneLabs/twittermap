@@ -73,7 +73,7 @@ def create_geohashes(output_data):
             print(item)
 
     write_geohashes(hashes)
-    write_keys(hashes)
+    #write_keys(hashes)
 
 
 def create_geohashes_please():

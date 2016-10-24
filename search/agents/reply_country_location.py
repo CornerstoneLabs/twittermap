@@ -4,6 +4,7 @@ import datetime
 import json
 import location
 import events
+import settings
 from rehash import create_geohashes_please
 
 
@@ -11,7 +12,7 @@ def add_tweet_enqueue_reply(output_obj, parent):
     """Enqueue the reply now we've worked out where it's for."""
     reply_queue = dataqueue.DataQueue('tweet-reply')
 
-    link = 'https://tweetmap.cornerstonelabs.co.uk/?lat=%s&lng=%s&o=t' % (
+    link = settings.WEB_LINK + '/?lat=%s&lng=%s&o=t' % (
         output_obj['lat'],
         output_obj['lon']
     )
@@ -46,8 +47,9 @@ def geocode_tweet(output_data, tweet):
     print('\n%s\n' % tweet)
     print('%s tweeted: %s \nuser location %s ' % (tweet['user']['name'], tweet['text'], tweet['user']['location']))
 
-    text = tweet['text']
+    text = tweet['text'].lower()
     text = text.replace('@CLbotbot', '')
+    text = text.replace('@dtdbot_', '')
     text = text.strip()
 
     try:
