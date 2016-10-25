@@ -2,7 +2,7 @@
 
 import os
 from fabric.api import env
-from fabric.operations import run, put
+from fabric.operations import put
 from fabric.contrib.project import rsync_project
 
 env.hosts = ['138.68.153.64']
@@ -10,7 +10,7 @@ env.user = 'root'
 
 remote_dirs = [
     '/var/www/tweetmap/',
-    '/var/www/dumteedum/',
+    # '/var/www/dumteedum/',
 ]
 local_dir = os.path.abspath('..')
 
@@ -22,6 +22,7 @@ def _deploy(files, remote_dir):
     rsync_project(local_dir=os.path.join(local_dir, 'public', 'img'), remote_dir=os.path.join(remote_dir, 'public'))
     rsync_project(local_dir=os.path.join(local_dir, 'public', 'js'), remote_dir=os.path.join(remote_dir, 'public'))
     rsync_project(local_dir=os.path.join(local_dir, 'agents'), remote_dir=os.path.join(remote_dir))
+    rsync_project(local_dir=os.path.join(local_dir, 'nodemap'), remote_dir=os.path.join(remote_dir), exclude='.env')
 
     for file_name in files:
         put(os.path.join(local_dir, file_name), os.path.join(remote_dir, file_name))

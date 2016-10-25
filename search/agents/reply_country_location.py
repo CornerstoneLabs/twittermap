@@ -1,6 +1,5 @@
 """Geocode incoming tweets."""
 import dataqueue
-import datetime
 import json
 import location
 import events
@@ -42,23 +41,8 @@ def add_tweet_enqueue_which_country(output_obj, question, parent):
     reply_queue.add(reply_data, output_obj['id'])
 
 
-def geocode_tweet(output_data, tweet):
-    """Add the tweet to data."""
-    print('\n%s\n' % tweet)
-    print('%s tweeted: %s \nuser location %s ' % (tweet['user']['name'], tweet['text'], tweet['user']['location']))
-
-    text = tweet['text'].lower()
-    text = text.replace('@CLbotbot', '')
-    text = text.replace('@dtdbot_', '')
-    text = text.strip()
-
-    try:
-        reply_value = int(text)
-    except Exception as ex:
-        print('Unable to parse %s' % text)
-        print(ex)
-        return False
-
+def relocate_original_town(tweet, reply_value):
+    """Get original place."""
     reply_tweet = tweet['in_reply_to_status_id']
     tweet_reply_queue = dataqueue.DataQueue('tweet-reply-sent')
     print('Finding reply tweet: %s' % reply_tweet)
@@ -71,6 +55,27 @@ def geocode_tweet(output_data, tweet):
 
     print ('Got country code %s, town %s' % (country_code, town))
     towns = location.lookup_town_levenshtein(town, country_code)
+    return towns
+
+
+def geocode_tweet(output_data, tweet):
+    """Add the tweet to data."""
+    print('\n%s\n' % tweet)
+    print('%s tweeted: %s \nuser location %s ' % (tweet['user']['name'], tweet['text'], tweet['user']['location']))
+
+    text = tweet['text'].lower()
+    text = text.replace('@CLbotbot', '')
+    text = text.replace('@dtdbot_', '')
+    text = text.replace('#dtdmap', '')
+    text = text.strip()
+
+    try:
+        reply_value = int(text)
+        towns = relocate_original_town(tweet, reply_value)
+    except Exception:
+        import agents.hashtag_location
+        agents.hashtag_location.geocode_tweet(output_data, tweet)
+        return True
 
     if len(towns) > 0:
         town = towns[0]

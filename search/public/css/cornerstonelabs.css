@@ -54,3 +54,21 @@
     background-color: #242d3d;
     color: #fff;
 }
+
+.btn {
+    background-color: #2880ca;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    padding: 8px;
+}
+
+a.btn,
+a.btn:visited {
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn:hover {
+    cursor: pointer;
+}

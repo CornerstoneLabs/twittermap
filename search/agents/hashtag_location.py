@@ -101,6 +101,20 @@ def request_town_confirmation(unique_countries, towns, tweet):
     )
 
 
+def add_tweet_cant_find_it(tweet):
+    """Enqueue the reply that we couldn't find it."""
+    reply_queue = dataqueue.DataQueue('tweet-reply')
+
+    reply_data = {
+        'in_reply_to_status_id': tweet['id'],
+        'screen_name': tweet['user']['screen_name'],
+        'status': 'I\'m sorry! I couldn\'t find that. Try tweeting the nearest town to #dtdmap',
+        'parent': tweet['id'],
+    }
+
+    reply_queue.add(reply_data, tweet['id'])
+
+
 def geocode_tweet(output_data, tweet):
     """Add the tweet to data."""
     tweet_text = ' '.join(location.sanitize_words(tweet['text'].split()))
@@ -124,6 +138,8 @@ def geocode_tweet(output_data, tweet):
         )
 
         print('Could not find town')
+        add_tweet_cant_find_it(tweet)
+
         return False
 
     if len(unique_countries) > 1:
