@@ -21,6 +21,8 @@ function spoofPosition (latitude, longitude, fullName, screenName, avatar, succe
 			fail(err);
 		} else {
 			success(outputObject);
+
+			fs.writeFileSync('../datastores/tweet-geocoded/pending/' + outputObject['id'] + '.json', output, 'utf-8');
 		}
 	});
 }

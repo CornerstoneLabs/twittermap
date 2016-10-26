@@ -307,7 +307,7 @@ function ajax(url, callback, data, x) {
 				// add to group
 				var popupHtml;
 
-				if (window.userTwitter.displayName) {
+				if (window.userTwitter && window.userTwitter.displayName) {
 					popupHtml = "<div style=\"text-align: center\"><button class=\"btn\" onClick=\"window.sendLocation();\">Pin "
 						+ window.userTwitter.displayName + " here!</button>"
 						+ "</div>";

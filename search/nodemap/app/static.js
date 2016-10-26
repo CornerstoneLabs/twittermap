@@ -8,7 +8,7 @@ function static(app) {
 		redirect: false
 	};
 
-	app.use(express.static('../public', options));
+	// app.use(express.static('../public', options));
 }
 
 module.exports = static;
