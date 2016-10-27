@@ -1,5 +1,6 @@
 var passport = require('passport');
-var Strategy = require('passport-twitter').Strategy;
+var passportTwitter = require('./passport-twitter.js');
+var passportFacebook = require('./passport-facebook.js');
 
 module.exports = function (app) {
 	app.use(passport.initialize());
@@ -13,17 +14,6 @@ module.exports = function (app) {
 		done(null, obj);
 	});
 
-	passport.use(
-		new Strategy({
-			consumerKey: process.env.CONSUMER_KEY,
-			consumerSecret: process.env.CONSUMER_SECRET,
-			callbackURL: process.env.CALLBACK_URL
-		},
-		function(token, tokenSecret, profile, cb) {
-			console.log(profile);
-			return cb(null, {
-				twitter: profile
-			});
-		}
-	));
+	passportTwitter(passport);
+	passportFacebook(passport);
 };

@@ -148,6 +148,17 @@ function ajax(url, callback, data, x) {
 				+ markerData.details
 				+ "</div>";
 
+			if (markerData.provider && markerData.provider === 'facebook') {
+				popupHtml = "<div style=\"text-align: center\"><h3>"
+				+ "<a target=\"_blank\" href=\""
+				+ markerData.screen_name
+				+ "\">"
+				+ markerData.name
+				+ "</a></h3>"
+				+ markerData.details
+				+ "</div>";
+			}
+
 			newMarker.bindPopup(popupHtml);
 
 			markerSource.push(newMarker);
@@ -311,9 +322,15 @@ function ajax(url, callback, data, x) {
 					popupHtml = "<div style=\"text-align: center\"><button class=\"btn\" onClick=\"window.sendLocation();\">Pin "
 						+ window.userTwitter.displayName + " here!</button>"
 						+ "</div>";
-				} else {
-					popupHtml = "<div style=\"text-align: center\"><a class=\"btn\" href=\"/auth/twitter\">Sign in with Twitter</button>"
+				} else if (window.userFacebook && window.userFacebook.displayName) {
+					popupHtml = "<div style=\"text-align: center\"><button class=\"btn\" onClick=\"window.sendLocation();\">Pin "
+						+ window.userFacebook.displayName + " here!</button>"
 						+ "</div>";
+				} else {
+					popupHtml = "<div style=\"text-align: center\">" +
+					"<div class=\"social-button\"><a class=\"btn\" href=\"/auth/twitter\">Sign in with Twitter</a></div>" +
+					"<div class=\"social-button\"><a class=\"btn\" href=\"/auth/facebook\">Sign in with Facebook</a></div>" +
+					"</div>";
 				}
 
 				_placeMeMarker.bindPopup(popupHtml).openPopup();
@@ -368,9 +385,17 @@ function ajax(url, callback, data, x) {
 
 		window.setInterval(refresh, 1000 * 10);
 
+		var socials = '';
+
+		if ((window.userTwitter && window.userTwitter.displayName) ||
+			(window.userFacebook && window.userFacebook.displayName)) {
+			socials += '<div><a href="/logout">Sign out.</a><div>';
+		}
+
 		var html = '<div class="cl-info-panel"><h2><span class="fa fa-info"></span> Pin yourself to the ' +
 			MAP_NAME +
 			' map</h2><p>Click on the map to pin yourself to it!</p>' +
+			socials +
 			'</div>';
 
 		var infoPopup = L.popup().setContent(html);

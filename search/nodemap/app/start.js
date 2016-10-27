@@ -1,5 +1,5 @@
 function start (app) {
-	app.listen(3000);
+	app.listen(int(process.env.SERVER_PORT));
 }
 
 module.exports = start;

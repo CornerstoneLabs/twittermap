@@ -12,12 +12,14 @@ function initialise () {
 	app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 	app.set('view engine', 'handlebars');
 
-	var sessionOptions = {
+	var fileStoreOptions = {
 		path: '../sessions'
 	};
 	app.use(session({
-		store: new FileStore(sessionOptions),
-		secret: 'dumteedum'
+		store: new FileStore(fileStoreOptions),
+		secret: 'dumteedum',
+		resave: true,
+		saveUninitialized: true
 	}));
 
 	return app;

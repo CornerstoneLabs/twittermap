@@ -1,3 +1,19 @@
+function getFacebookData (req) {
+	var result = {};
+
+	try {
+		result = {
+			displayName: req.session.passport.user.facebook.displayName,
+			profileUrl: req.session.passport.user.facebook.profileUrl,
+			facebookProfilePhoto: req.session.passport.user.facebook.facebookProfilePhoto
+		};
+	} catch (e) {
+
+	}
+
+	return result;
+}
+
 function getTwitterData (req) {
 	var result = {};
 
@@ -16,7 +32,11 @@ function getTwitterData (req) {
 
 function home (req, res) {
 	res.render('home', {
-		twitter: getTwitterData(req)
+		twitter: getTwitterData(req),
+		facebook: getFacebookData(req),
+		configuration: {
+			serverUrl: process.env.SERVER_URL || ''
+		}
 	});
 }
 

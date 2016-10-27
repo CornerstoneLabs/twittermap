@@ -10,7 +10,7 @@ env.user = 'root'
 
 remote_dirs = [
     '/var/www/tweetmap/',
-    '/var/www/dumteedum/',
+    #'/var/www/dumteedum/',
 ]
 local_dir = os.path.abspath('..')
 
