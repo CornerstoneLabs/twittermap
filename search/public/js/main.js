@@ -146,6 +146,7 @@ function ajax(url, callback, data, x) {
 				+ markerData.name
 				+ "</a></h3>"
 				+ markerData.details
+				+ '<span style="display: none">' + markerData.id + '</span>'
 				+ "</div>";
 
 			if (markerData.provider && markerData.provider === 'facebook') {
@@ -156,6 +157,7 @@ function ajax(url, callback, data, x) {
 				+ markerData.name
 				+ "</a></h3>"
 				+ markerData.details
+				+ '<span style="display: none">' + markerData.id + '</span>'
 				+ "</div>";
 			}
 

@@ -1,5 +1,9 @@
 function start (app) {
-	app.listen(int(process.env.SERVER_PORT));
+	var port = parseInt(process.env.SERVER_PORT);
+
+	app.listen(port);
+
+	console.log('Started on port', port);
 }
 
 module.exports = start;
