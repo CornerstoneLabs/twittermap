@@ -68,9 +68,10 @@ def create_geohashes(output_data):
     hashes = {}
 
     for item in output_data:
-        if 'deleted' in item and item['deleted'] == True:
+        if 'deleted' in item and item['deleted'] is True:
             print('Item %s is deleted' % item['id'])
         else:
+            print('Hashing %s' % item['id'])
             try:
                 calculated_geohash = geohash.encode(
                     float(item['lat']),
