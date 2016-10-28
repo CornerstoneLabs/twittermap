@@ -9,12 +9,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.1.2",
+    "country-data": "0.0.31",
+    "csv": "^1.1.0",
     "dotenv": "^2.0.0",
     "express-session": "^1.14.1",
     "guid": "0.0.12",
+    "haversine": "^1.0.1",
+    "node-geo-distance": "^1.2.0",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
     "passport-twitter": "^1.0.4",
-    "session-file-store": "^0.2.2"
+    "session-file-store": "^0.2.2",
+    "threads": "^0.7.0"
   }
 }

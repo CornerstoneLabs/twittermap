@@ -1,34 +1,5 @@
-function getFacebookData (req) {
-	var result = {};
-
-	try {
-		result = {
-			displayName: req.session.passport.user.facebook.displayName,
-			profileUrl: req.session.passport.user.facebook.profileUrl,
-			facebookProfilePhoto: req.session.passport.user.facebook.facebookProfilePhoto
-		};
-	} catch (e) {
-
-	}
-
-	return result;
-}
-
-function getTwitterData (req) {
-	var result = {};
-
-	try {
-		result = {
-			displayName: req.session.passport.user.twitter.displayName,
-			screenName: req.session.passport.user.twitter._json.screen_name,
-			profile_image_url_https: req.session.passport.user.twitter._json.profile_image_url_https
-		};
-	} catch (e) {
-
-	}
-
-	return result;
-}
+var getFacebookData = require('../viewmodels/facebook.js');
+var getTwitterData = require('../viewmodels/twitter.js');
 
 function home (req, res) {
 	res.render('home', {

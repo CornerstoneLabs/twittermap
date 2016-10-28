@@ -77,3 +77,55 @@ a.btn:visited {
 .btn:hover {
     cursor: pointer;
 }
+
+.avatar-list--item {
+    height: 14em;
+    text-align: center;
+}
+
+.avatar-list--item-avatar {
+    border: solid 1px #fff;
+    border-radius: 50%;
+    box-shadow: 2px 3px 6px rgba(0,0,0,0.4);
+}
+
+.avatar-list--item-name {
+    color: #38517b;
+    font-size: 20px;
+    margin-bottom: 4px;
+    margin-top: 16px;
+}
+
+.avatar-list--item-name a {
+    color: #38517b;
+}
+
+.avatar-list--distance {
+    color: #666;
+}
+
+.country-stripe {
+    padding-bottom: 16px;
+    padding-top: 24px;
+}
+
+.country-stripe.even {
+    background-color: #fafafa;
+}
+
+.country-name {
+    color: #666;
+    padding-bottom: 24px;
+}
+
+.header-stripe {
+    background-color: #152f5b;
+    color: #fff;
+    padding-bottom: 24px;
+    padding-top: 24px;
+}
+
+.header-stripe a {
+    color: #fff;
+    text-decoration: underline;
+}

@@ -286,7 +286,7 @@ function ajax(url, callback, data, x) {
 			text: "Interactive map<br/>by Cornerstone Labs",
 			position: 'bottomleft',
 			width: 30,
-			height: 30
+			height: 40
 		}).addTo(map);
 
 		markerGroup = L.markerClusterGroup({

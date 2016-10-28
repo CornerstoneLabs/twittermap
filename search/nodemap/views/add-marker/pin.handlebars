@@ -1,0 +1,38 @@
+<script>
+	window.userTwitter = {{{ json twitter }}};
+	window.userFacebook = {{{ json facebook }}};
+	window.configuration = {{{ json configuration }}};
+</script>
+
+<div class="header-stripe">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12">
+				<h1>Add yourself to {{ town }}.</h1>
+				<a href="/add-to-map/{{ code }}/select-town/">Back to choose town.</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="country-stripe {{stripeClass}}">
+	<div class="container">
+		<div class="row country-name">
+			<div class="col-xs-12">
+				<form method="post" action="">
+					<label for="yes">Do you want to pin yourself to {{ town }}?</label>
+					<button id="yes" class="btn" type="submit">Yes</button>
+
+					<a href="/add-to-map/{{ code }}/select-town/">No, go back to choose town.</a>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+			Page generated in {{ duration }}ms.
+		</div>
+	</div>
+</div>

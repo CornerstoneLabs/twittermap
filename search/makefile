@@ -3,6 +3,7 @@ install:
 	source bin/activate && pip3 install -r requirements.txt
 
 deploy:
+	# mv nodemap/.env nodemap/_env
 	cd manage && fab deploy
 
 deploy-geo:

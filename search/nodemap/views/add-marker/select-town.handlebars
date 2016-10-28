@@ -1,0 +1,43 @@
+<script>
+	window.userTwitter = {{{ json twitter }}};
+	window.userFacebook = {{{ json facebook }}};
+	window.configuration = {{{ json configuration }}};
+</script>
+
+<div class="header-stripe">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12">
+				<h1>Add yourself to {{ country }}, {{ facebook.displayName }}{{ twitter.displayName }}.</h1>
+				<a href="/add-to-map/select-country">Back to choose country.</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="country-stripe {{stripeClass}}">
+	<div class="container">
+		<div class="row country-name">
+			<div class="col-xs-12">
+				<h2>Which town or city are you nearest to?</h2>
+
+				{{#each towns}}
+					<h3>Towns starting with {{ this.code }}.</h3>
+
+					{{#each this.items }}
+						<div class="">
+							<a href="/add-to-map/{{ this.code }}/{{ this.name }}/pin/">{{ this.name }}.</a>
+						</div>
+					{{/each}}
+				{{/each}}
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+			Page generated in {{ duration }}ms.
+		</div>
+	</div>
+</div>
