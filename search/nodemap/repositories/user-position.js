@@ -4,7 +4,7 @@ function all () {
 	return new Promise(function (resolve, reject) {
 		var filePath = '../public/data/tweets.spool';
 
-		fs.readFile(filePath, function read(err, buffer) {
+		fs.readFile(filePath, {encoding: 'utf-8'}, function read(err, buffer) {
 			console.log('Read all users');
 			if (err) {
 				console.log(err);

@@ -11,7 +11,7 @@ function all () {
 
 		var filePath = '../geo/GeoLiteCity-Location.csv';
 
-		fs.readFile(filePath, function read(err, data) {
+		fs.readFile(filePath, {encoding: 'utf-8'}, function read(err, data) {
 			if (err) {
 				reject(err);
 			} else {

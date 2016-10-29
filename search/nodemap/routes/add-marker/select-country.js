@@ -23,6 +23,31 @@ function showAllCountries (req, res) {
 	});
 }
 
+function popularCountryView () {
+	return new Promise(function (resolve, reject) {
+		userPositionRepository
+			.all()
+			.then(function (response) {
+				distance
+					.mergeDistances(response)
+					.then(function (distances) {
+						var countries = [];
+						try {
+							countries = countryTransform(distances);
+						} catch (e) {
+							console.log(e);
+						}
+
+						resolve(countries);
+					}, function (error) {
+						reject(error);
+					});
+			}, function (error) {
+				reject(error);
+			});
+	});
+}
+
 function selectCountry (req, res) {
 	var start = new Date();
 
@@ -30,31 +55,19 @@ function selectCountry (req, res) {
 		return showAllCountries(req, res);
 	}
 
-	userPositionRepository
-		.all()
-		.then(function (response) {
-			distance
-				.mergeDistances(response)
-				.then(function (distances) {
-					try {
-						var countries = countryTransform(distances);
-					} catch (e) {
-						console.log(e);
-					}
-
-					res.render('add-marker/select-country', {
-						userPositions: distances,
-						countries: countries,
-						twitter: getTwitterData(req),
-						facebook: getFacebookData(req),
-						configuration: {
-							serverUrl: process.env.SERVER_URL || ''
-						},
-						duration: new Date().getTime() - start.getTime()
-					});
-				}, function (error) {
-					res.send(error);
-				});
+	popularCountryView()
+		.then(function (countries) {
+			res.render('add-marker/select-country', {
+				countries: countries,
+				twitter: getTwitterData(req),
+				facebook: getFacebookData(req),
+				configuration: {
+					serverUrl: process.env.SERVER_URL || ''
+				},
+				duration: new Date().getTime() - start.getTime()
+			});
+		}, function (error) {
+			res.send(error);
 		});
 }
 
