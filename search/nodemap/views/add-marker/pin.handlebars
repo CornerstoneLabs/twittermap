@@ -16,13 +16,19 @@
 </div>
 <div class="country-stripe {{stripeClass}}">
 	<div class="container">
-		<div class="row country-name">
-			<div class="col-xs-12">
-				<form method="post" action="">
-					<label for="yes">Do you want to pin yourself to {{ town }}?</label>
-					<button id="yes" class="btn" type="submit">Yes</button>
+		<form method="post" action="">
+			<div class="row country-name">
+				<div class="col-xs-12">
+					<label class="big-text" for="yes">Do you want to pin yourself to {{ town }}?</label>
+				</div>
+			</div>
 
-					<a href="/add-to-map/{{ code }}/select-town/">No, go back to choose town.</a>
+			<div class="row country-name">
+				<div class="col-xs-12 col-sm-6">
+					<button id="yes" class="btn big-text full-width" type="submit">Yes</button>
+				</div>
+				<div class="col-xs-12 col-sm-6">
+					<a class="btn big-text" href="/add-to-map/{{ code }}/select-town/">No.</a>
 				</form>
 			</div>
 		</div>

@@ -22,7 +22,7 @@ function spoofPosition (latitude, longitude, fullName, screenName, avatar, provi
 		} else {
 			success(outputObject);
 
-			fs.writeFileSync('../datastores/tweet-geocoded/pending/' + outputObject['id'] + '.json', output, 'utf-8');
+			//fs.writeFileSync('../datastores/tweet-geocoded/pending/' + outputObject['id'] + '.json', output, 'utf-8');
 		}
 	});
 }

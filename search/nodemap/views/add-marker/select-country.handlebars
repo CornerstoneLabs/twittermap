@@ -9,7 +9,7 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<h1>Add yourself to the map, {{ facebook.displayName }}{{ twitter.displayName }}.</h1>
-				<a href="/list">Back to list.</a>
+				<a href="/list">Back to list</a>
 			</div>
 		</div>
 	</div>
@@ -21,10 +21,14 @@
 				<h2>Which country do you want to add yourself to?</h2>
 
 				{{#each countries}}
-					<div class="">
-						<a href="/add-to-map/{{ this.code }}/select-town/">{{ this.name }}.</a>
+					<div class="big-list-text">
+						<a href="/add-to-map/{{ this.code }}/select-town/">{{ this.name }}</a>
 					</div>
 				{{/each}}
+
+				<div class="big-list-text">
+					<a href="?all=true">List all countries</a>
+				</div>
 			</div>
 		</div>
 	</div>
