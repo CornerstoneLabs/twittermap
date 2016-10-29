@@ -156,3 +156,12 @@ a.btn:visited {
 .full-width {
     width: 100%;
 }
+
+ol {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li.horizontal {
+    display: inline;
+}

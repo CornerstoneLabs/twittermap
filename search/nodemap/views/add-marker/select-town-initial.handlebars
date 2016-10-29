@@ -25,30 +25,19 @@
 </div>
 
 
-{{#each towns}}
-	<div class="letter-stripe">
-		<div class="container">
-			<div class="row">
-				<div class="col-xs-12">
-					<h3>Towns starting with {{ this.code }}</h3>
-				</div>
-			</div>
+<div class="container">
+	<div class="row">
+		<div class="col-xs-12">
+			<p class="big-text">What letter does the town start with?</p>
+
+			<ol>
+				{{#each towns}}
+					<li class="horizontal"><a class="big-text" href="?initial={{ this.code }}">{{ this.code }}</a></li>
+				{{/each}}
+			</ol>
 		</div>
 	</div>
-	<div class="container">
-		<div class="row selection-stripe">
-			<div class="col-xs-12">
-				<ol class="big-list-text">
-					{{#each this.items }}
-						<li class="big-list-text">
-							<a href="/add-to-map/{{ this.code }}/{{ this.name }}/pin/">{{ this.name }}</a>
-						</li>
-					{{/each}}
-				</ol>
-			</div>
-		</div>
-	</div>
-{{/each}}
+</div>
 
 <div class="container">
 	<div class="row">

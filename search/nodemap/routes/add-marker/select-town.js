@@ -13,8 +13,17 @@ function selectCountry (req, res) {
 		.then(function (towns) {
 			var country = countries[code].name;
 			var transformedTowns = capitalTransform(towns, 'name');
+			var view = 'add-marker/select-town-initial';
 
-			res.render('add-marker/select-town', {
+			if (req.query.initial) {
+				view = 'add-marker/select-town';
+
+				transformedTowns = transformedTowns.filter(function (item) {
+					return (item.code === req.query.initial);
+				});
+			}
+
+			res.render(view, {
 				country: country,
 				countryCode: code,
 				twitter: getTwitterData(req),
