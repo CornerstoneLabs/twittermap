@@ -3,7 +3,7 @@ var fs = require('fs');
 var _cache;
 
 var COUNTRY_CODE_INDEX = 4;
-var COUNTRY_NAME_INDEX = 5
+var COUNTRY_NAME_INDEX = 5;
 
 function haveCountryCode(data, code) {
 	return data.filter(function (item) {
@@ -51,7 +51,7 @@ function countries () {
 			if (err) {
 				reject(err);
 			} else {
-				var buffer = data.toString();
+				var buffer = data.toString('utf-8');
 
 				csv.parse(buffer, {}, function(err, data) {
 					if (err) {

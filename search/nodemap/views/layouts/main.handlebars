@@ -37,7 +37,23 @@
         <script src="/js/main.js"></script>
     </head>
     <body>
-        {{{ body }}}
+        <div class="main-content">
+            {{{ body }}}
+        </div>
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <span class="debug">Page generated {{ duration }}ms</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <span class="debug">This product includes GeoLite data created by MaxMind, available from <a href="http://www.maxmind.com">http://www.maxmind.com</a>.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
 

@@ -2,34 +2,38 @@ var csv = require('csv');
 var fs = require('fs');
 var _cache;
 
-function all () {
-	return new Promise(function (resolve, reject) {
-		if (typeof _cache !== 'undefined') {
-			resolve(_cache);
-			return;
+function allPromise(resolve, reject) {
+	if (typeof _cache !== 'undefined') {
+		resolve(_cache);
+		return;
+	}
+
+	var filePath = '../geo/GeoLiteCity-Location.csv';
+
+	function csvParsed(err, data) {
+		if (err) {
+			reject(err);
+		} else {
+			_cache = data;
+			resolve(data);
 		}
+	}
 
-		var filePath = '../geo/GeoLiteCity-Location.csv';
+	function readFileSuccess(err, data) {
+		if (err) {
+			reject(err);
+		} else {
+			var buffer = data.toString('utf-8');
 
-		fs.readFile(filePath, {encoding: 'utf-8'}, function read(err, data) {
-			if (err) {
-				reject(err);
-			} else {
-				var buffer = data.toString();
-				console.log(buffer.length);
+			csv.parse(buffer, {}, csvParsed);
+		}
+	}
 
-				csv.parse(buffer, {}, function(err, data) {
-					if (err) {
-						reject(err);
-					} else {
-						_cache = data;
-						resolve(data);
-					}
-				});
+	fs.readFile(filePath, {encoding: 'utf-8'}, readFileSuccess);
+}
 
-			}
-		});
-	});
+function all () {
+	return new Promise(allPromise);
 }
 
 module.exports = all;

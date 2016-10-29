@@ -10,13 +10,38 @@ function findCapital(list, capital) {
 	return result;
 }
 
+function capitalDataSortDelegate(a, b) {
+	if (a.code < b.code) {
+		return -1;
+	}
+
+	if (a.code > b.code) {
+		return 1;
+	}
+
+	return 0;
+}
+
+function itemSortDelegate(key) {
+	return function (a, b) {
+		if (a[key] < b[key]) {
+			return -1;
+		}
+
+		if (a[key] > b[key]) {
+			return 1;
+		}
+
+		return 0;
+	};
+}
+
 function capitalTransform(list, key) {
 	var capitalData = [];
 
-	list.forEach(function (item) {
+	function handleListItem(item) {
 		if (item[key] !== '') {
 			var capitalCode = item[key].substring(0, 1);
-
 			var c = findCapital(capitalData, capitalCode);
 
 			if (typeof c === 'undefined') {
@@ -27,45 +52,28 @@ function capitalTransform(list, key) {
 
 				capitalData.push(c);
 			}
-
-			var findLength = (c.items.filter(function (findItem) {
-				return findItem[key] == item[key];
-			})).length;
-
-			//
-			// Don't duplicate
-			//
-			if (findLength === 0) {
-				c.items.push(item);
-			}
+			c.items.push(item);
 		}
-	});
+	}
 
-	capitalData.forEach(function (item) {
-		item.items.sort(function (a, b) {
-			if (a[key] < b[key]) {
-				return -1;
-			}
+	for (var i=0; i<list.length;i++) {
+		handleListItem(list[i]);
+	}
 
-			if (a[key] > b[key]) {
-				return 1;
-			}
-
-			return 0;
-		});
-	});
-
-	capitalData.sort(function (a, b) {
-		if (a.code < b.code) {
-			return -1;
+	function handleCapitalizeItem(item) {
+		try {
+			item.items = Array.from(item.items);
+			item.items.sort(itemSortDelegate(key));
+		} catch (e) {
+			console.log(e);
 		}
+	}
 
-		if (a.code > b.code) {
-			return 1;
-		}
+	for(var j=0; j<capitalData.length; j++) {
+		handleCapitalizeItem(capitalData[j]);
+	}
 
-		return 0;
-	});
+	capitalData.sort(capitalDataSortDelegate);
 
 	return capitalData;
 }

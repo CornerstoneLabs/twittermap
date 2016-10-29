@@ -9,22 +9,19 @@
 		<div class="row">
 			<div class="col-xs-12">
 				<h1>Add yourself to {{ country }}, {{ facebook.displayName }}{{ twitter.displayName }}.</h1>
-				<a href="/add-to-map/{{ countryCode }}/select-town/">Back to choose initial letter</a>
 			</div>
 		</div>
 	</div>
 </div>
-<div class="country-stripe {{stripeClass}}">
+<div class="country-stripe">
 	<div class="container">
-		<div class="row country-name">
-			<div class="col-xs-12">
-				<h2>Select the nearest town</h2>
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 big-text">
+				<a href="/add-to-map/{{ countryCode }}/select-town/">&lt; Back to choose initial letter</a>
 			</div>
 		</div>
 	</div>
 </div>
-
-
 {{#each towns}}
 	<div class="letter-stripe">
 		<div class="container">
@@ -39,9 +36,9 @@
 		<div class="row selection-stripe">
 			<div class="col-xs-12">
 				<ol class="big-list-text">
-					{{#each this.items }}
+					{{#each this.names }}
 						<li class="big-list-text">
-							<a href="/add-to-map/{{ this.code }}/{{ this.name }}/pin/">{{ this.name }}</a>
+							<a href="/add-to-map/{{ ../../countryCode }}/{{ this }}/pin/">{{ this }}</a>
 						</li>
 					{{/each}}
 				</ol>
@@ -49,11 +46,3 @@
 		</div>
 	</div>
 {{/each}}
-
-<div class="container">
-	<div class="row">
-		<div class="col-xs-12">
-			Page generated in {{ duration }}ms.
-		</div>
-	</div>
-</div>

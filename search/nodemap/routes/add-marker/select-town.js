@@ -5,14 +5,14 @@ var getFacebookData = require('../../viewmodels/facebook.js');
 var getTwitterData = require('../../viewmodels/twitter.js');
 var cache = require('../../caches/view-cache.js');
 
-
-
 function selectTownByInitial(req, res, code, initial) {
 	var start = new Date();
 	var cacheKey = 'select-town-' + code + '-' + initial;
 	var country = countries[code].name;
 
 	function output (transformedTowns) {
+		transformedTowns.items = Array.from(new Set(transformedTowns.items));
+
 		res.render('add-marker/select-town', {
 			country: country,
 			countryCode: code,
@@ -43,6 +43,12 @@ function selectTownByInitial(req, res, code, initial) {
 				.country(code)
 				.then(function (towns) {
 					var transformedTowns = getTownsByInitial(towns, req.query.initial);
+					var names = transformedTowns[0].items.map(function nameMapper(item) {
+						return item.name;
+					});
+					names = Array.from(new Set(names));
+
+					transformedTowns[0].names = names;
 
 					cache
 						.write(cacheKey, transformedTowns)

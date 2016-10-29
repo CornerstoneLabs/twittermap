@@ -9,7 +9,7 @@ var cities;
 
 function mergeCitiesForPosition() {
 	function done() {
-		setTimeout(mergeCitiesForPosition, 1000);
+		setTimeout(mergeCitiesForPosition, 4000);
 	}
 
 	function onUserCalculatedLoad(calculatedIds) {
