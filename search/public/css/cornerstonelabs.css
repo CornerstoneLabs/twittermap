@@ -210,3 +210,7 @@ footer {
 
 footer .container {
 }
+
+.btn-social>:first-child {
+    border-right: none;
+}

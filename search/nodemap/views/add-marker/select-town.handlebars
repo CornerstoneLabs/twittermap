@@ -17,18 +17,16 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-xs-12 col-sm-12 col-md-12 big-text">
-				<a href="/add-to-map/{{ countryCode }}/select-town/">&lt; Back to choose initial letter</a>
+				<a href="/add-to-map/{{ countryCode }}/select-town/">&lt; back to choose initial letter</a>
 			</div>
 		</div>
 	</div>
 </div>
 {{#each towns}}
-	<div class="letter-stripe">
-		<div class="container">
-			<div class="row">
-				<div class="col-xs-12">
-					<h3>Towns starting with {{ this.code }}</h3>
-				</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12">
+				<h2>Towns starting with {{ this.code }}</h2>
 			</div>
 		</div>
 	</div>

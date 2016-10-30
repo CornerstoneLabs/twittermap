@@ -11,6 +11,7 @@ function read (key) {
 				var data = buffer.toString();
 				var parsedData = JSON.parse(data);
 				resolve(parsedData);
+				console.log('Read out of cache', key);
 			}
 		});
 	});

@@ -397,6 +397,8 @@ function ajax(url, callback, data, x) {
 		var html = '<div class="cl-info-panel"><h2><span class="fa fa-info"></span> Pin yourself to the ' +
 			MAP_NAME +
 			' map</h2><p>Click on the map to pin yourself to it!</p>' +
+			'<div><a href="/list">Check out other DumTeeDummer\'s by country.</a></div>' +
+			'<hr>' +
 			socials +
 			'</div>';
 
