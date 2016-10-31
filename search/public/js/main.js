@@ -398,6 +398,7 @@ function ajax(url, callback, data, x) {
 			MAP_NAME +
 			' map</h2><p>Click on the map to pin yourself to it!</p>' +
 			'<div><a href="/list">Check out other DumTeeDummer\'s by country.</a></div>' +
+			'<div><br/><br/>To remove yourself, email <a href="mailto:hello@cornerstonelabs.co.uk">hello@cornerstonelabs.co.uk</a></div>' +
 			'<hr>' +
 			socials +
 			'</div>';
