@@ -7,24 +7,9 @@ var diagnostics = require('../diagnostics/index.js');
 var userCalculatedRepository = require('./user-calculated.js');
 var cities;
 
-function loadJsonFile(filePath) {
-	return new Promise(function (resolve, reject) {
-		fs.readFile(filePath, {encoding: 'utf-8'}, function read(err, buffer) {
-			if (err) {
-				resolve(null);
-			} else {
-				var data = buffer.toString();
-				var parsedData = JSON.parse(data);
-				resolve(parsedData);
-			}
-		});
-	});
-}
-
 function mergeCitiesForPosition(req, res) {
 	var calculatedIds;
 	var userPosition;
-	var deletedUsers;
 
 	function done() {
 		res.send(200);
@@ -34,19 +19,11 @@ function mergeCitiesForPosition(req, res) {
 		diagnostics.log('onUserCalculatedLoadError', error);
 	}
 
-	function isUserDeleted(item) {
-		return deletedUsers.filter(function (checkItem) {
-			return (checkItem === item.id);
-		}).length > 0;
-	}
-
 	function findNextUncalculatedUser() {
 		var findNextUncalculated = null;
 		userPosition.forEach(function (item) {
 			if (typeof calculatedIds[item.id] === 'undefined') {
-				if (isUserDeleted(item) === false) {
-					findNextUncalculated = item;
-				}
+				findNextUncalculated = item;
 			}
 		});
 
@@ -74,41 +51,16 @@ function mergeCitiesForPosition(req, res) {
 			diagnostics.log('No more uncalculated');
 		}
 
-		deletedUsers.map(function (deletedId) {
-			diagnostics.log('Checking deleted id ', deletedId);
-
-			if (typeof calculatedIds[deletedId] !== 'undefined') {
-				diagnostics.log('Item exists, deleting ', deletedId);
-
-				delete calculatedIds[deletedId];
-			}
-		});
-
 		userCalculatedRepository
 			.save(calculatedIds)
 			.then(done, done);
-	}
-
-	function onLoadDeletedUsersDelegate(_deletedUsers) {
-		deletedUsers = _deletedUsers;
-
-		if (deletedUsers === null) {
-			deletedUsers = [];
-		}
-
-		processMerge();
-	}
-
-	function loadDeletedUsers() {
-		loadJsonFile('../public/data/deleted.spool')
-			.then(onLoadDeletedUsersDelegate, onError);
 	}
 
 	function onUserPositionRepositoryDelegate(_userPosition) {
 		diagnostics.log('onUserPositionRepositoryDelegate');
 		userPosition = _userPosition;
 
-		loadDeletedUsers();
+		processMerge();
 	}
 
 	function onUserCalculatedLoad(_calculatedIds) {
