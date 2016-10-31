@@ -11,6 +11,14 @@ function loginRequired (request, response, next) {
 	response.redirect('/login');
 }
 
+function localHostOnly(req,res,next){
+	if (req.headers.host === ('127.0.0.1:' + process.env.SERVER_PORT)) {
+		next();
+	} else {
+		res.send(500);
+	}
+}
+
 function routes (app) {
 	app.get('/', home);
 	app.get('/list', require('./list-view.js'));
@@ -59,6 +67,8 @@ function routes (app) {
 			res.redirect(req.session.returnTo || '/');
 			req.session.returnTo = null;
 		});
+
+	app.get('/admin/distance-repository/merge-cities-for-position', localHostOnly, require('../repositories/distance-repository.js').mergeCitiesForPosition);
 }
 
 module.exports = routes;
