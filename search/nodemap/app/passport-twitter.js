@@ -1,7 +1,6 @@
 var TwitterStrategy = require('passport-twitter').Strategy;
 
 function onTwitterCallback(token, tokenSecret, profile, callback) {
-	console.log(profile);
 	return callback(null, {
 		twitter: profile
 	});

@@ -10,8 +10,8 @@ function read (key) {
 			} else {
 				var data = buffer.toString();
 				var parsedData = JSON.parse(data);
-				resolve(parsedData);
 				console.log('Read out of cache', key);
+				return resolve(parsedData);
 			}
 		});
 	});
@@ -23,9 +23,9 @@ function write (key, data) {
 
 		fs.writeFile(filePath, JSON.stringify(data), {encoding: 'utf-8'}, function written (err) {
 			if (err) {
-				reject(err);
+				return reject(err);
 			} else {
-				resolve(data);
+				return resolve(data);
 			}
 		});
 	});

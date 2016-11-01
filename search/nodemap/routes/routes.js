@@ -3,11 +3,11 @@ var home = require('./home.js');
 var placeMarker = require('./place-marker.js');
 
 function loginRequired (request, response, next) {
-	request.session.returnTo = request.path;
-
 	if (request.isAuthenticated()) {
 		return next();
 	}
+
+	request.session.returnTo = request.path;
 	response.redirect('/login');
 }
 
@@ -50,8 +50,9 @@ function routes (app) {
 			failureRedirect : '/'
 		}),
 		function(req, res) {
-			res.redirect(req.session.returnTo || '/');
-			req.session.returnTo = null;
+			var redirect = req.session.returnTo;
+			req.session.returnTo = '/';
+			res.redirect(redirect || '/');
 		});
 
 
@@ -64,8 +65,9 @@ function routes (app) {
 			failureRedirect: '/'
 		}),
 		function(req, res) {
-			res.redirect(req.session.returnTo || '/');
-			req.session.returnTo = null;
+			var redirect = req.session.returnTo;
+			req.session.returnTo = '/';
+			res.redirect(redirect || '/');
 		});
 
 	app.get('/admin/distance-repository/merge-cities-for-position', localHostOnly, require('../repositories/distance-repository.js').mergeCitiesForPosition);

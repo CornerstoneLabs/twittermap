@@ -214,3 +214,8 @@ footer .container {
 .btn-social>:first-child {
     border-right: none;
 }
+
+.map-link {
+    text-align: right;
+    margin-top: 18px;
+}

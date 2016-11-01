@@ -20,13 +20,13 @@ function load() {
 					var data = buffer.toString();
 					var parsedData = JSON.parse(data);
 
-					resolve(parsedData);
+					return resolve(parsedData);
 				} catch (e) {
 					console.log(e);
 					//
 					// Can't parse the file. Give up.
 					//
-					resolve({});
+					return resolve({});
 				}
 			}
 		});
@@ -35,8 +35,6 @@ function load() {
 
 function save(data) {
 	return new Promise(function (resolve, reject) {
-		_cache = data;
-
 		fs.writeFile(filePath, JSON.stringify(data), 'utf-8', function done (err) {
 			if (err) {
 				reject(err);

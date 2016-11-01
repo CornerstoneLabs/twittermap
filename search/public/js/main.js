@@ -340,6 +340,7 @@ function ajax(url, callback, data, x) {
 				window._placeMeMarker = _placeMeMarker;
 			} else {
 				_placeMeMarker.setLatLng(e.latlng).openPopup();
+				console.log(e.latlng);
 			}
 		}
 

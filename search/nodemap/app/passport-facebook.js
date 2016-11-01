@@ -1,7 +1,6 @@
 var FacebookStrategy = require('passport-facebook').Strategy;
 
 function facebookMapper(profile) {
-	console.log(profile);
 	var user = {};
 
 	user.profileUrl = profile.profileUrl || '';
