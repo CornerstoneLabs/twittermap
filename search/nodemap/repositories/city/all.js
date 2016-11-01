@@ -36,4 +36,4 @@ function all () {
 	return new Promise(allPromise);
 }
 
-module.exports = all;
+//module.exports = all;

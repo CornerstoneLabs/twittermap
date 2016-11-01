@@ -61,6 +61,7 @@ with open('../geo/GeoLiteCity-Location.csv', 'rt') as csvfile:
         data['id'] = row[0]
         data['country_code'] = row[1]
         data['name'] = row[3]
+        data['region'] = row[2]
 
         try:
             data['location'] = {

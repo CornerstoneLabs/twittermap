@@ -1,12 +1,8 @@
-var async = require('async');
 var haversine = require('haversine');
-var fs = require('fs');
-var cityRepository = require('./city-repository.js');
 var userPositionRepository = require('./user-position.js');
 var diagnostics = require('../diagnostics/index.js');
 var userCalculatedRepository = require('./user-calculated.js');
 var request = require('request');
-var cities;
 
 function mergeCitiesForPosition(req, res) {
 	var calculatedIds;
@@ -31,6 +27,14 @@ function mergeCitiesForPosition(req, res) {
 		return findNextUncalculated;
 	}
 
+	function saveAndContinue(calculatedIds) {
+		userCalculatedRepository
+			.save(calculatedIds)
+			.then(function () {
+				mergeCitiesForPosition(req, res);
+			}, done);
+	}
+
 	function saveAndFinish(calculatedIds) {
 		userCalculatedRepository
 			.save(calculatedIds)
@@ -45,16 +49,28 @@ function mergeCitiesForPosition(req, res) {
 
 		if (findNextUncalculated !== null) {
 			findNearestCity(findNextUncalculated, function (nearest) {
-				diagnostics.log('Calculating', findNextUncalculated.id);
+				if (nearest !== null) {
+					diagnostics.log('Calculating', findNextUncalculated.id);
 
-				calculatedIds[findNextUncalculated.id] = {
-					country: nearest.city[1],
-					region: nearest.city[2],
-					city: nearest.city[3],
-					distance: nearest.distance
-				};
+					calculatedIds[findNextUncalculated.id] = {
+						country: nearest.city[1],
+						region: nearest.city[2],
+						city: nearest.city[3],
+						distance: nearest.distance
+					};
+				} else {
+					console.log('Could not map ');
+					console.log(findNextUncalculated);
 
-				saveAndFinish(calculatedIds);
+					calculatedIds[findNextUncalculated.id] = {
+						country: 'Unknown',
+						region: '',
+						city: 'Unknown',
+						distance: 0
+					};
+				}
+
+				saveAndContinue(calculatedIds);
 			});
 		} else {
 			diagnostics.log('No more uncalculated');
@@ -84,45 +100,39 @@ function mergeCitiesForPosition(req, res) {
 		.then(onUserCalculatedLoad, done);
 }
 
-function loadAllCities() {
-	diagnostics.log('Loading cities');
-	cityRepository
-		.all()
-		.then(function (data) {
-			diagnostics.log(data.length + ' cities parsed');
-			cities = data;
-		}, function (err) {
-			diagnostics.log(err);
-		});
-}
-
 function findNearestCity(item, callback) {
-	var found = null;
-	var minDistance = null;
+	if (item.lon < 180) {
+		item.lon += 360;
+	}
 
-	console.log(item);
+	if (item.lon > 180) {
+		item.lon -= 360;
+	}
 
 	var query = {
 		"size": 1,
 		"query": {
-			"filtered": {
-				"filter": {
-					"geo_bounding_box": {
-						"type": "indexed",
-						"location": {
-							"top_left": {
-								"lat": parseFloat(item.lat) + 10,
-								"lon": parseFloat(item.lon) - 10
-							},
-							"bottom_right": {
-								"lat": parseFloat(item.lat) - 10,
-								"lon": parseFloat(item.lon) + 10
-							}
-						}
-					}
-				}
-			}
+			"match_all": {}
 		},
+		// "query": {
+		// 	"filtered": {
+		// 		"filter": {
+		// 			"geo_bounding_box": {
+		// 				"type": "indexed",
+		// 				"location": {
+		// 					"top_left": {
+		// 						"lat": parseFloat(item.lat) + 100,
+		// 						"lon": parseFloat(item.lon) - 100
+		// 					},
+		// 					"bottom_right": {
+		// 						"lat": parseFloat(item.lat) - 100,
+		// 						"lon": parseFloat(item.lon) + 100
+		// 					}
+		// 				}
+		// 			}
+		// 		}
+		// 	}
+		// },
 		"sort": [
 			{
 				"_geo_distance": {
@@ -132,25 +142,20 @@ function findNearestCity(item, callback) {
 					},
 					"order": "asc",
 					"unit": "km",
-					"distance_type": "plane"
+					"distance_type": "arc"
 				}
 			}
 		]
 	};
 
-	var config = {
-		url: 'http://0.0.0.0:9200/towns/town/_search',
-		body: query
-	};
-
 	function requestCallback (error, response, body) {
 		if (!error && response.statusCode == 200) {
-			console.log(body) // Show the HTML for the Google homepage.
+			diagnostics.log(body);
 
 			if (body.hits.hits.length > 0) {
 				var townItem = body.hits.hits[0]._source;
 
-				console.log(townItem);
+				diagnostics.log(townItem);
 
 				var coord1 = {
 					latitude: parseFloat(townItem.location.lat),
@@ -172,7 +177,7 @@ function findNearestCity(item, callback) {
 				var result = {
 					city: [
 						townItem.id,
-						townItem.country_code.upper(),
+						townItem.country_code.toUpperCase(),
 						townItem.region || '',
 						townItem.name
 					],
@@ -180,65 +185,21 @@ function findNearestCity(item, callback) {
 				};
 
 				callback(result);
+			} else {
+				callback(null);
+			}
 		} else {
-			console.log('error ', error);
+			diagnostics.log('error occurred ', error);
+			diagnostics.log(response);
+			diagnostics.log(body);
+
+			diagnostics.log(JSON.stringify(query));
+
+			callback(null);
 		}
 	}
 
-	request.post('http://0.0.0.0:9200/towns/town/_search', { json: query }, requestCallback);
-
-	// async.each(cities, function (city) {
-	// 	var coord1 = {
-	// 		latitude: parseFloat(city[5]),
-	// 		longitude: parseFloat(city[6])
-	// 	};
-
-	// 	var coord2 = {
-	// 		latitude: parseFloat(item.lat),
-	// 		longitude: parseFloat(item.lon)
-	// 	};
-
-	// 	var distance;
-
-	// 	try {
-	// 		distance = haversine(coord1, coord2, {unit: 'mile'});
-	// 	} catch (e) {
-	// 		diagnostics.log(e);
-	// 	}
-
-	// 	if (city[3] !== '') {
-	// 		if (
-	// 			(
-	// 				(minDistance === null) &&
-	// 				(isNaN(distance) === false)
-	// 			) ||
-	// 			(
-	// 				(minDistance !== null) &&
-	// 				(distance <= minDistance) &&
-	// 				(distance > 0) &&
-	// 				(isNaN(distance) === false)
-	// 			)
-	// 		) {
-	// 			found = city;
-
-	// 			minDistance = distance;
-	// 		}
-	// 	}
-	// });
-
-	// return {
-	// 	city: found,
-	// 	distance: minDistance
-	// };
-}
-
-function userPositionMapper(item) {
-	var nearest = findNearestCity(item);
-
-	item.city = nearest.city;
-	item.distance = nearest.distance;
-
-	return item;
+	request.post('http://127.0.0.1:9200/towns/town/_search', { json: query }, requestCallback);
 }
 
 function mergeDistances(items) {
