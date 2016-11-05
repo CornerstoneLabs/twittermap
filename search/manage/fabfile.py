@@ -24,6 +24,7 @@ def _deploy(files, remote_dir):
     rsync_project(local_dir=os.path.join(local_dir, 'agents'), remote_dir=os.path.join(remote_dir))
     rsync_project(local_dir=os.path.join(local_dir, 'nodemap'), remote_dir=os.path.join(remote_dir), exclude='.env')
     rsync_project(local_dir=os.path.join(local_dir, 'geo'), remote_dir=os.path.join(remote_dir), exclude='.env')
+    rsync_project(local_dir=os.path.join(local_dir, 'es-towns'), remote_dir=os.path.join(remote_dir), exclude='.env')
 
     for file_name in files:
         put(os.path.join(local_dir, file_name), os.path.join(remote_dir, file_name))
