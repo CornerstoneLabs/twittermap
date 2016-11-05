@@ -1,0 +1,66 @@
+<script>
+	window.userTwitter = {{{ json twitter }}};
+	window.userFacebook = {{{ json facebook }}};
+	window.configuration = {{{ json configuration }}};
+</script>
+
+<div class="header-stripe">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-8">
+				<h1>DumTeeDum Trakr.</h1>
+			</div>
+			<div class="col-xs-12 col-sm-2 pull-right map-link">
+				<a href="/">View map</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="country-stripe">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-6 col-md-6 big-text">
+				<p>{{ userPositions.length }} dumteedummer{{ addS userPositions.length }} by country</p>
+			</div>
+			<div class="col-xs-12 col-sm-6 col-md-3 big-text pull-right">
+				<a class="btn" href="/add-to-map/select-country">Join the map</a>
+			</div>
+		</div>
+	</div>
+</div>
+{{#stripes countries 'even' 'odd'}}
+	<div class="country-stripe {{stripeClass}}">
+		<div class="container">
+			<div class="row country-name">
+				<div class="col-xs-12 col-sm-6">
+					<h2>{{ this.name }}, {{ this.people.length }} dumteedummer{{ addS this.people.length }}.</h2>
+				</div>
+			</div>
+
+			<div class="row">
+				{{#each this.people }}
+					<div class="col-xs-6 col-sm-4 col-md-2 avatar-list--item">
+						<div>
+							<img class="avatar-list--item-avatar" src="{{ this.avatar }}" alt="Avatar of {{ this.name }}." />
+						</div>
+						<div class="avatar-list--item-name">
+							<a href="{{ socialLink this }}">{{ this.name }}</a>
+						</div>
+
+						{{#if this.location }}<div class="avatar-list--distance"><!--{{ dp this.location.distance }} miles from -->{{ this.location.city}}</div>{{/if}}
+					</div>
+				{{/each}}
+			</div>
+		</div>
+	</div>
+
+{{else}}
+	<div>There are no countries.</div>
+{{/stripes}}
+<div class="container">
+	<div class="row country-name">
+		<div class="col-xs-12 col-sm-6">
+			<div><br/><br/>To remove yourself, email <a href="mailto:hello@cornerstonelabs.co.uk">hello@cornerstonelabs.co.uk</a></div>
+		</div>
+	</div>
+</div>

@@ -15,7 +15,7 @@ def environment_value(key, default=None):
     else:
         return default
 
-SEARCH = ['#clmtest']
+SEARCH = [environment_value('HASHTAG')]
 
 #
 # Twitter settings.
@@ -43,11 +43,7 @@ DATASTORE_PATH = environment_value('DATASTORE_PATH', os.path.abspath('.'))
 if 'GEOHASH_PRECISION' in os.environ:
     GEOHASH_PRECISION = int(os.environ['GEOHASH_PRECISION'])
 
-WHITELIST = [
-    'adamauckland',
-    'kaelifa',
-    'j3rryj0hns0n1',
-]
+WHITELIST = []
 
 COUCHDB_SERVER = environment_value('COUCHDB_SERVER')
 COUCHDB_DATABASE = environment_value('COUCHDB_DATABASE')
@@ -76,3 +72,5 @@ BOOTSTRAP_VIEWS = {
         }
     },
 }
+
+WEB_LINK = environment_value('WEB_LINK')

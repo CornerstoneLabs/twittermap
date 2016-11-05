@@ -1,0 +1,47 @@
+<script>
+	window.userTwitter = {{{ json twitter }}};
+	window.userFacebook = {{{ json facebook }}};
+	window.configuration = {{{ json configuration }}};
+</script>
+
+<div class="header-stripe">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12">
+				<h1>Add yourself to the map, {{ facebook.displayName }}{{ twitter.displayName }}.</h1>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="country-stripe">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-12 big-text">
+				<a href="/list">&lt; back to dumteedummer list</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="country-stripe {{stripeClass}}">
+	<div class="container">
+		<div class="row country-name">
+			<div class="col-xs-12">
+				<h2>What country are you in?</h2>
+
+				<ol class="big-list-text">
+					{{#each countries}}
+						<li>
+							<a href="/add-to-map/{{ this.code }}/select-town/">{{ this.name }}</a>
+						</li>
+					{{/each}}
+				</ol>
+
+				<br/>
+
+				<div class="big-list-text">
+					<a href="?all=true">List all countries</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

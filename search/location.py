@@ -273,7 +273,13 @@ def ignore_word(word):
     if word.startswith('#'):
         ignore = True
 
+    if word.startswith('@'):
+        ignore = True
+
     if word == ',':
+        ignore = True
+
+    if word == '.':
         ignore = True
 
     return ignore

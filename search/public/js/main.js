@@ -1,12 +1,12 @@
 var url = 'data/tweets.json';
-var MAP_NAME = 'TESTING';
-var TWEET_HASHTAG  = '#clmtest';
+var MAP_NAME = 'DumTeeDum';
+var TWEET_HASHTAG  = '#dtdmap';
 
 function getParameterByName(name, url) {
 	if (!url) url = window.location.href;
 	name = name.replace(/[\[\]]/g, "\\$&");
 	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-	    results = regex.exec(url);
+		results = regex.exec(url);
 	if (!results) return null;
 	if (!results[2]) return '';
 	return decodeURIComponent(results[2].replace(/\+/g, " "));
@@ -20,11 +20,11 @@ function ajax(url, callback, data, x) {
 		x = new(this.XMLHttpRequest || ActiveXObject)('MSXML2.XMLHTTP.3.0');
 		x.open(data ? 'POST' : 'GET', url, 1);
 		x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-		x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		x.setRequestHeader('Content-type', 'application/json');
 		x.onreadystatechange = function () {
 			x.readyState > 3 && callback && callback(x.responseText, x);
 		};
-		x.send(data)
+		x.send(data);
 	} catch (e) {
 		// window.console && console.log(e);
 	}
@@ -36,20 +36,20 @@ function ajax(url, callback, data, x) {
 	// twitter injector here
 	//
 	window.twttr = (function(d, s, id) {
-	    var js, fjs = d.getElementsByTagName(s)[0],
-	        t = window.twttr || {};
-	    if (d.getElementById(id)) return t;
-	    js = d.createElement(s);
-	    js.id = id;
-	    js.src = "https://platform.twitter.com/widgets.js";
-	    fjs.parentNode.insertBefore(js, fjs);
+		var js, fjs = d.getElementsByTagName(s)[0],
+			t = window.twttr || {};
+		if (d.getElementById(id)) return t;
+		js = d.createElement(s);
+		js.id = id;
+		js.src = "https://platform.twitter.com/widgets.js";
+		fjs.parentNode.insertBefore(js, fjs);
 
-	    t._e = [];
-	    t.ready = function(f) {
-	        t._e.push(f);
-	    };
+		t._e = [];
+		t.ready = function(f) {
+			t._e.push(f);
+		};
 
-	    return t;
+		return t;
 	}(document, "script", "twitter-wjs"));
 
 	var map;
@@ -121,7 +121,7 @@ function ajax(url, callback, data, x) {
 
 			if (USE_CLUSTERING === false) {
 				opts = {
-					bounceOnAdd: true,
+					bounceOnAdd: true
 				};
 			}
 
@@ -146,7 +146,20 @@ function ajax(url, callback, data, x) {
 				+ markerData.name
 				+ "</a></h3>"
 				+ markerData.details
+				+ '<span style="display: none">' + markerData.id + '</span>'
 				+ "</div>";
+
+			if (markerData.provider && markerData.provider === 'facebook') {
+				popupHtml = "<div style=\"text-align: center\"><h3>"
+				+ "<a target=\"_blank\" href=\""
+				+ markerData.screen_name
+				+ "\">"
+				+ markerData.name
+				+ "</a></h3>"
+				+ markerData.details
+				+ '<span style="display: none">' + markerData.id + '</span>'
+				+ "</div>";
+			}
 
 			newMarker.bindPopup(popupHtml);
 
@@ -273,7 +286,7 @@ function ajax(url, callback, data, x) {
 			text: "Interactive map<br/>by Cornerstone Labs",
 			position: 'bottomleft',
 			width: 30,
-			height: 30
+			height: 40
 		}).addTo(map);
 
 		markerGroup = L.markerClusterGroup({
@@ -285,34 +298,111 @@ function ajax(url, callback, data, x) {
 
 		map.on('movestart', function() {
 			hashes = [];
- 		});
+		});
 
 		map.on('moveend', function() {
 			window.setTimeout(refresh, 1000);
- 		});
+		});
+
+		var _placeMeMarker;
+		function onMapClick(e) {
+			if (typeof _placeMeMarker === 'undefined') {
+				_placeMeMarker = new L.marker(e.latlng, {draggable:'true'});
+
+				_placeMeMarker.on('dragend', function(event){
+					var marker = event.target;
+					var position = marker.getLatLng();
+					marker.setLatLng(new L.LatLng(position.lat, position.lng),{draggable:'true'});
+					map.panTo(new L.LatLng(position.lat, position.lng));
+				});
+				map.addLayer(_placeMeMarker);
+
+				// add to group
+				var popupHtml;
+
+				if (window.userTwitter && window.userTwitter.displayName) {
+					popupHtml = "<div style=\"text-align: center\"><button class=\"btn\" onClick=\"window.sendLocation();\">Pin "
+						+ window.userTwitter.displayName + " here!</button>"
+						+ "</div>";
+				} else if (window.userFacebook && window.userFacebook.displayName) {
+					popupHtml = "<div style=\"text-align: center\"><button class=\"btn\" onClick=\"window.sendLocation();\">Pin "
+						+ window.userFacebook.displayName + " here!</button>"
+						+ "</div>";
+				} else {
+					popupHtml = "<div style=\"text-align: center\">" +
+					"<div class=\"social-button\"><a class=\"btn\" href=\"/auth/twitter\">Sign in with Twitter</a></div>" +
+					"<div class=\"social-button\"><a class=\"btn\" href=\"/auth/facebook\">Sign in with Facebook</a></div>" +
+					"</div>";
+				}
+
+				_placeMeMarker.bindPopup(popupHtml).openPopup();
+
+				window._placeMeMarker = _placeMeMarker;
+			} else {
+				_placeMeMarker.setLatLng(e.latlng).openPopup();
+				console.log(e.latlng);
+			}
+		}
+
+		map.on('click', onMapClick);
+
+		//
+		// Send the location
+		//
+		window.sendLocation = function () {
+			var _placeMeMarker = window._placeMeMarker;
+
+			var data = JSON.stringify({
+				lat: _placeMeMarker.getLatLng().lat,
+				lng: _placeMeMarker.getLatLng().lng
+			});
+
+			ajax('/place-marker', function (a, b) {
+				if (b.status === 200) {
+					//alert("You've been added to the map! Your lovely face will appear shortly!");
+
+					addMarker(JSON.parse(b.response));
+
+					_placeMeMarker.closePopup();
+				} else {
+					alert('Hmm, something went wrong, sorry.');
+				}
+			}, data);
+		};
+
 
 		if (override === false) {
 			var locateError = L.popup().setContent('Unable to work out your location.');
 			var lc = L.control.locate({
-	 			flyTo: false,
-	 			onLocationError: function () {
-	 				locateError.setLatLng(map.getCenter()).openOn(map);
-	 			},
-	 			onLocationOutsideMapBounds: function () { },
-	 		}).addTo(map);
+				flyTo: false,
+				onLocationError: function () {
+					locateError.setLatLng(map.getCenter()).openOn(map);
+				},
+				onLocationOutsideMapBounds: function () { },
+			}).addTo(map);
 
 			window.setTimeout(function () {
-		 		lc.start();
+				lc.start();
 			}, 2000);
 		}
 
 		window.setInterval(refresh, 1000 * 10);
 
+		var socials = '';
+
+		if ((window.userTwitter && window.userTwitter.displayName) ||
+			(window.userFacebook && window.userFacebook.displayName)) {
+			socials += '<div><a href="/logout">Sign out.</a><div>';
+		}
+
 		var html = '<div class="cl-info-panel"><h2><span class="fa fa-info"></span> Pin yourself to the ' +
 			MAP_NAME +
-			' map</h2><p>Tweet your town & country to ' + TWEET_HASHTAG + '.</p><p>' +
-			'<a href="https://twitter.com/intent/tweet?button_hashtag=#clmtest" class="twitter-hashtag-button" data-show-count="false">#clmtest</a>' +
-			'</p></div>';
+			' map</h2><p>Click on the map to pin yourself to it!</p>' +
+			'<div><a href="/list">Check out other DumTeeDummer\'s by country.</a></div>' +
+			'<div><br/><br/>To remove yourself, email <a href="mailto:hello@cornerstonelabs.co.uk">hello@cornerstonelabs.co.uk</a></div>' +
+			'<hr>' +
+			socials +
+			'</div>';
 
 		var infoPopup = L.popup().setContent(html);
 		var easyButton = L.easyButton('fa-info', function(btn, map){
