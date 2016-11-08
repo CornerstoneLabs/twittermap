@@ -6,6 +6,7 @@ var routes = require('./routes/routes.js');
 var start = require('./app/start.js');
 var static = require('./app/static.js');
 var bugsnag = require('bugsnag');
+
 bugsnag.register('63229fb0f45cca52fdf23340974f137a');
 bugsnag.notify(new Error("Starting up."));
 
