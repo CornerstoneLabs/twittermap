@@ -3,8 +3,7 @@ install:
 	source bin/activate && pip3 install -r requirements.txt
 
 deploy:
-	# mv nodemap/.env nodemap/_env
-	cd manage && fab deploy
+	source bin/activate && cd manage && fab deploy
 
 deploy-geo:
 	scp -r ./geo/* root@138.68.153.64:/var/www/tweetmap/geo/

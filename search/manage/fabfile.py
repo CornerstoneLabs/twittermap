@@ -2,7 +2,7 @@
 
 import os
 from fabric.api import env
-from fabric.operations import put
+from fabric.operations import put, run
 from fabric.contrib.project import rsync_project
 
 env.hosts = ['138.68.153.64']
@@ -10,11 +10,28 @@ env.user = 'root'
 
 remote_dirs = [
     '/var/www/tweetmap/',
-    '/var/www/dumteedum/',
+    # '/var/www/dumteedum/',
 ]
 local_dir = os.path.abspath('..')
 
 print("Deploying from %s" % local_dir)
+
+
+def _before_all():
+    env_file = os.path.abspath('nodemap/.env')
+    if os.path.exists(env_file):
+        os.rename(env_file, os.path.abspath('nodemap/_env'))
+
+
+def _after_all():
+    env_file = os.path.abspath('nodemap/_env')
+    if os.path.exists(env_file):
+        os.rename(env_file, os.path.abspath('nodemap/.env'))
+
+
+def _upgrade(remote_dir):
+    print('Updating npm')
+    run('cd %snodemap && npm install' % remote_dir)
 
 
 def _deploy(files, remote_dir):
@@ -52,3 +69,4 @@ def deploy():
 
     for remote_dir in remote_dirs:
         _deploy(files, remote_dir)
+        _upgrade(remote_dir)
