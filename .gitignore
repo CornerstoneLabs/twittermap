@@ -93,3 +93,4 @@ search/geo/GeoIPCountryWhois.csv
 search/public/js/apikey.js
 search/nodemap/node_modules/
 search/logviewer/node_modules/
+search/dashboard/node_modules/
