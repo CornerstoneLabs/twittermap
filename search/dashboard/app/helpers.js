@@ -55,7 +55,6 @@ function registerPartials(partialsDir) {
 		var name = matches[1];
 		var template = fs.readFileSync(partialsDir + '/' + filename, 'utf8');
 
-		console.log('Registering partial: ', name);
 		Handlebars.registerPartial(name, template);
 	});
 }

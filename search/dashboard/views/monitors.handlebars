@@ -1,0 +1,26 @@
+{{> nav monitorSelected=true }}
+{{> monitors }}
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<form name="addMonitor" action="/monitor/add" method="post">
+				<legend>Add monitor.</legend>
+
+				<input type="hidden" name="_id" value="{{ data._id}}"/>
+
+				<div class="form-group">
+					<label for="monitorName">Name</label>
+					<input type="text" class="form-control" id="monitorName" name="monitorName" value="{{ data.name }}">
+				</div>
+
+				<div class="form-group">
+					<label for="fabricCommand">Fabric command</label>
+					<input type="text" class="form-control" id="fabricCommand" name="fabricCommand" value="{{ data.fabricCommand }}">
+				</div>
+
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</form>
+		</div>
+	</div>
+</div>
