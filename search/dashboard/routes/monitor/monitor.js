@@ -1,4 +1,4 @@
-var Monitor = require('../../models/monitor.js');
+var Monitor = require('../../models/Monitor.js');
 
 function status (req, res) {
 	var promises = [];

@@ -1,6 +1,6 @@
 var express = require('express');
 
-function static(app) {
+function staticFiles(app) {
 	var options = {
 		dotfiles: 'ignore',
 		index: false,
@@ -11,4 +11,4 @@ function static(app) {
 	app.use(express.static('public', options));
 }
 
-module.exports = static;
+module.exports = staticFiles;

@@ -1,21 +1,16 @@
-var Instance = require('../models/instance.js');
+var Instance = require('../models/Instance.js');
 var homeViewModel = require('../viewmodels/home-view-model.js');
 
-function home (req, res) {
-	homeViewModel()
-		.then((data) => {
+async function home (req, res) {
+	try {
+		var context = await homeViewModel();
 
-			Instance
-				.list()
-				.then(function (instances) {
+		context.instances = await Instance.list();
 
-					data.instances = instances;
-					res.render('home', data);
-
-				}, function (error) {
-					console.log(error);
-				});
-		});
+		res.render('home', context);
+	} catch (e) {
+		res.send(500);
+	}
 }
 
 module.exports = home;

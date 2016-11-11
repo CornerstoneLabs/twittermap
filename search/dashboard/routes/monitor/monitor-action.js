@@ -1,6 +1,6 @@
-var Monitor = require('../../models/monitor.js');
+var Monitor = require('../../models/Monitor.js');
 
-function statusAction (req, res) {
+function monitorAction (req, res) {
 	function success () {
 		res.redirect('/monitor');
 	}
@@ -21,4 +21,4 @@ function statusAction (req, res) {
 	}
 }
 
-module.exports = statusAction;
+module.exports = monitorAction;

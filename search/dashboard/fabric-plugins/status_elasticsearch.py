@@ -11,4 +11,4 @@ def status():
     """Run check on Elasticsearch."""
     output = run('curl http://127.0.0.1:9200/_stats')
     data = json.loads(output)
-    save(True, data, 'dumteedum_status', 'elasticsearch')
+    save(True, data, 'dumteedum_status', 'elasticsearch', output)

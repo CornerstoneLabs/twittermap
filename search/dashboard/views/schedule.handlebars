@@ -1,0 +1,40 @@
+{{> nav scheduleSelected=true }}
+{{> schedule }}
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<form name="addMonitor" action="/schedule/add" method="post">
+				<legend>Add schedule.</legend>
+
+				<input type="hidden" name="_id" value="{{ data._id}}"/>
+
+				<div class="form-group">
+					<label for="scheduleMonitor">Monitor</label>
+					<select name="scheduleMonitor">
+						{{#monitors }}
+							{{{option ../data.monitor }}}
+						{{/monitors}}
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="scheduleInstance">Instance</label>
+					<select name="scheduleInstance">
+						{{#instances }}
+							{{{option ../data.instance }}}
+						{{/instances }}
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="scheduleCron">Cron</label>
+
+					<input type="text" name="scheduleCron" value="{{ data.cron }}"/>
+				</div>
+
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</form>
+		</div>
+	</div>
+</div>

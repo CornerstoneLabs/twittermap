@@ -1,4 +1,4 @@
-"""Get status of memory."""
+"""Get status of disk."""
 
 from fabric.operations import run
 from status_base import save, setup_environment
@@ -23,7 +23,6 @@ def convert(data):
 
 
 def status():
-    """Run check on memory."""
-    output = run('free')
-    data = convert(output)
-    save(True, data, 'dumteedum_status', 'memory-free')
+    """Run check on disk."""
+    output = run('pm2 ls', pty=False)
+    save(True, {}, 'dumteedum_status', 'pm2-list', output)

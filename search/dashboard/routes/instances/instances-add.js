@@ -1,4 +1,4 @@
-var Instance = require('../../models/instance.js');
+var Instance = require('../../models/Instance.js');
 
 function statusAdd (req, res) {
 	var data = {

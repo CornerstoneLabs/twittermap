@@ -1,4 +1,4 @@
-var BaseModel = require('./base-model.js');
+var BaseModel = require('./BaseModel.js');
 
 class Instance extends BaseModel {
 	static _collection() {

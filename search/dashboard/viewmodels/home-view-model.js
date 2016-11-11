@@ -8,13 +8,15 @@ var queries = [
 		name: 'elasticsearch',
 		collection: 'elasticsearch',
 		mapper: elasticSearchMapper,
-		partial: 'elasticsearch'
+		partial: 'elasticsearch',
+		latest: true
 	},
 	{
 		name: 'memoryFree',
 		collection: 'memory-free',
 		mapper: memoryFreeMapper,
-		partial: 'memory-free'
+		partial: 'memory-free',
+		latest: true
 	}
 ];
 
@@ -25,12 +27,14 @@ function homeViewModel() {
 		return new Promise((resolve, reject) => {
 			var collection = _db.collection(query.collection);
 
-			collection.find().toArray(function(err, results) {
-				query.data = results.map(query.mapper);
-				query.latest = findLatest(query.data);
+			if (query.latest) {
+				collection.find().sort({date:-1}).limit(1).toArray(function(err, results) {
+					query.data = results.map(query.mapper);
+					query.latest = findLatest(query.data);
 
-				resolve();
-			});
+					resolve();
+				});
+			}
 		});
 	}
 

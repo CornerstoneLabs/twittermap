@@ -59,11 +59,26 @@ function registerPartials(partialsDir) {
 	});
 }
 
+function selectHelper (selected, options) {
+	var innerBlock = options.fn(this);
+
+	return innerBlock.replace(
+		new RegExp(' value=\"' + selected + '\"'),
+		'$& selected="selected"');
+}
+
+function optionHelper (value) {
+	var selected = value === (this._id.toString()) ? 'selected="selected"' : '';
+	return '<option value="' + this._id + '" ' + selected + '>' + this.name + '</option>';
+}
+
 function helpers (app) {
 	Handlebars.registerHelper('dp', decimalPlaceHelper);
 	Handlebars.registerHelper('json', jsonHelper);
 	Handlebars.registerHelper('addS', addS);
 	Handlebars.registerHelper("stripes", stripesHelper);
+	Handlebars.registerHelper('select', selectHelper);
+	Handlebars.registerHelper('option', optionHelper);
 
 	registerPartials('views/partials');
 }

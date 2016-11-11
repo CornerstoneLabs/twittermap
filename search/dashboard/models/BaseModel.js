@@ -1,4 +1,4 @@
-var ModelDatabase = require('./model-database.js');
+var ModelDatabase = require('./ModelDatabase.js');
 
 class BaseModel {
 	static get(id) {

@@ -1,4 +1,4 @@
-var Status = require('../../models/instance.js');
+var Status = require('../../models/Instance.js');
 
 function instancesAction (req, res) {
 	function success () {

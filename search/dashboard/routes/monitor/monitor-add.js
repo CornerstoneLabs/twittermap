@@ -1,9 +1,10 @@
-var Monitor = require('../../models/monitor.js');
+var Monitor = require('../../models/Monitor.js');
 
 function monitorAdd (req, res) {
 	var data = {
 		name: req.body.monitorName,
-		fabricCommand: req.body.fabricCommand
+		fabricCommand: req.body.fabricCommand,
+		mongoCollection: req.body.mongoCollection
 	};
 
 	if (req.body._id) {

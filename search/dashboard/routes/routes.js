@@ -1,13 +1,15 @@
+function registerCrud(app, mountPoint, moduleName) {
+	app.get(`${mountPoint}/`, require(`./${moduleName}/${moduleName}.js`));
+	app.post(`${mountPoint}/add`, require(`./${moduleName}/${moduleName}-add.js`));
+	app.post(`${mountPoint}/action`, require(`./${moduleName}/${moduleName}-action.js`));
+}
+
 function routes (app) {
 	app.get('/', require('./home.js'));
 
-	app.get('/monitor/', require('./monitor/monitor.js'));
-	app.post('/monitor/add', require('./monitor/monitor-add.js'));
-	app.post('/monitor/action', require('./monitor/monitor-action.js'));
-
-	app.get('/instances/', require('./instances/instances.js'));
-	app.post('/instances/add', require('./instances/instances-add.js'));
-	app.post('/instances/action', require('./instances/instances-action.js'));
+	registerCrud(app, '/monitor', 'monitor');
+	registerCrud(app, '/instances', 'instances');
+	registerCrud(app, '/schedule', 'schedule');
 }
 
 module.exports = routes;
