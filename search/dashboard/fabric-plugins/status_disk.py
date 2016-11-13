@@ -1,7 +1,7 @@
 """Get status of disk."""
 
 from fabric.operations import run
-from status_base import save, setup_environment
+from status_base import save, setup_environment, schedule_log
 
 setup_environment()
 
@@ -24,5 +24,9 @@ def convert(data):
 
 def status():
     """Run check on disk."""
+    schedule_log("Starting Disk Monitor")
+
     output = run('df -h')
     save(True, {}, 'dumteedum_status', 'disk', output)
+
+    schedule_log('Finished')

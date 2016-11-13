@@ -15,13 +15,16 @@ function connect () {
 	});
 }
 
-function get(collectionName, id) {
+function get(collectionName, id, originalType) {
 	return new Promise((resolve, reject) => {
 		function found(err, document) {
 			if (err) {
 				reject(err);
 			} else {
-				resolve(document);
+				var returnType = new originalType();
+				Object.assign(returnType, document);
+
+				resolve(returnType);
 			}
 		}
 

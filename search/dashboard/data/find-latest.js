@@ -3,7 +3,6 @@ function findLatest(data) {
 	var oldDate = null;
 
 	data.forEach((item) => {
-		console.log(item);
 		var itemIsNewer =
 			(oldDate === null) ||
 			(

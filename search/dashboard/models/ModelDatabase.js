@@ -1,10 +1,10 @@
 var mongo = require('../repositories/mongo.js');
 
 class ModelDatabase {
-	get(collectionName, id) {
+	get(collectionName, id, originalType) {
 		return new Promise((resolve, reject) => {
 			mongo
-				.get(collectionName, id)
+				.get(collectionName, id, originalType)
 				.then(resolve, reject);
 		});
 	}

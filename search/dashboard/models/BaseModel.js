@@ -4,7 +4,7 @@ class BaseModel {
 	static get(id) {
 		var modelDatabase = new ModelDatabase();
 
-		return modelDatabase.get(this._collection(), id);
+		return modelDatabase.get(this._collection(), id, this);
 	}
 
 	static update(id, data) {

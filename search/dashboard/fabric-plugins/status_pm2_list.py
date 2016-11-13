@@ -1,7 +1,7 @@
 """Get status of disk."""
 
 from fabric.operations import run
-from status_base import save, setup_environment
+from status_base import save, setup_environment, schedule_log
 
 setup_environment()
 
@@ -23,6 +23,10 @@ def convert(data):
 
 
 def status():
-    """Run check on disk."""
+    """Run PM2 Monitor."""
+    schedule_log("Starting PM2 Monitor")
+
     output = run('pm2 ls', pty=False)
     save(True, {}, 'dumteedum_status', 'pm2-list', output)
+
+    schedule_log("Finished")
