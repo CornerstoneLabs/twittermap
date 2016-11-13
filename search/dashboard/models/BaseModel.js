@@ -29,7 +29,7 @@ class BaseModel {
 	static list() {
 		var modelDatabase = new ModelDatabase();
 
-		return modelDatabase.list(this._collection());
+		return modelDatabase.list(this._collection(), this);
 	}
 }
 

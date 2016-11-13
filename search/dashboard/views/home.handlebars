@@ -1,9 +1,15 @@
 {{> nav homeSelected=true }}
-{{> elasticsearch }}
-{{> memoryfree }}
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h2>Home</h2>
+		</div>
+	</div>
+</div>
+{{> rulesengine }}
 
 <script>
 	window.setTimeout(function () {
 		location.reload();
-	}, 60*1000);
+	}, 5000);
 </script>

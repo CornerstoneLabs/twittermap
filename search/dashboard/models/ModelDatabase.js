@@ -33,10 +33,10 @@ class ModelDatabase {
 		});
 	}
 
-	list(collectionName) {
+	list(collectionName, originalType) {
 		return new Promise((resolve, reject) => {
 			mongo
-				.list(collectionName)
+				.list(collectionName, originalType)
 				.then(resolve, reject);
 		});
 	}

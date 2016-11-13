@@ -8,6 +8,13 @@ var jobs = [];
 var CWD = './fabric-plugins/';
 var COMMAND = 'fab ';
 
+/**
+ * Clone the local environment, then override some variables
+ *
+ * @param instance
+ * @param schedule
+ * @returns {{evironment}}
+ */
 function childEnvironmentFactory(instance, schedule) {
 	var environment = {};
 	for (var e in process.env) {
@@ -27,6 +34,11 @@ function executeScheduledItemCallback (error, stdout, stderr) {
 	console.log(error);
 }
 
+/**
+ * Execute the scheduled item.
+ *
+ * @param schedule
+ */
 async function executeScheduledItem (schedule) {
 	console.log('Preparing to execute scheduled task');
 
@@ -45,37 +57,46 @@ async function executeScheduledItem (schedule) {
 	console.log('Executed.')
 }
 
+/**
+ * Enqueue scheduled task in the jobs list.
+ *
+ * @param schedule
+ */
 function enqueueJob (schedule) {
 	console.log(`Scheduling task ${schedule.monitor} for ${schedule.cron}`);
 
 	try {
-
 		var job = nodeSchedule.scheduleJob(schedule.cron, function () {
 			console.log(`Executing task ${schedule.monitor} for ${schedule.cron}`)
 			executeScheduledItem(schedule);
 		});
+
+		jobs.push(job);
 	} catch (e) {
 		console.log(e);
 	}
 
 	console.log('Created job, pushing into jobs stack.');
-
-	jobs.push(job);
 }
 
+/**
+ * Schedule all jobs in the scheduler to be run.
+ */
 async function scheduleJobs () {
 	var schedules = await Schedule.list();
 
 	schedules.forEach(enqueueJob);
 }
 
-async function initialise () {
+async function start () {
 	scheduleJobs();
 }
 
+/**
+ * Cancel all jobs and re-schedule.
+ */
 function reset() {
 	jobs.forEach((job) => {
-		console.log('Cancelling job');
 		job.cancel();
 	});
 
@@ -83,7 +104,7 @@ function reset() {
 }
 
 module.exports = {
-	initialise: initialise,
+	start: start,
 	reset: reset,
 	executeScheduledItem: executeScheduledItem
 };

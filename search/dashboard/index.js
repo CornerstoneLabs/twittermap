@@ -14,7 +14,8 @@ var initialise = require('./app/initialise.js');
 var routes = require('./routes/routes.js');
 var start = require('./app/start.js');
 var staticFiles = require('./app/static.js');
-var scheduletasks = require('./app/scheduletasks.js');
+var scheduledTasks = require('./app/scheduled-tasks.js');
+var rulesEngine = require('./app/rules-engine.js');
 
 //
 // Start app.
@@ -24,4 +25,9 @@ helpers();
 routes(app);
 staticFiles(app);
 start(app);
-scheduletasks.initialise();
+
+//
+// Now the app is started, start the monitors and rules engine.
+//
+scheduledTasks.start();
+rulesEngine.start();

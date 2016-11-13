@@ -1,0 +1,32 @@
+<style>
+	.padding {
+		padding: 8px;
+		margin-bottom: 8px;
+	}
+	.red {
+		background: #ffdddd;
+	}
+
+	.orange {
+		background: #ffffdd;
+	}
+
+	.green {
+		background: #ddffdd;
+	}
+</style>
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			{{#each rules }}
+				<div class="{{ this.status }} padding">
+					<h2>{{ this.name }}</h2>
+					<div>{{ this.instance.name }}</div>
+					<div>{{ this.message }}</div>
+					<div>{{ this.information }}</div>
+				</div>
+			{{/each}}
+		</div>
+	</div>
+</div>

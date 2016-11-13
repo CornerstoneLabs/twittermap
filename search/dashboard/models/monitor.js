@@ -17,14 +17,16 @@ class Monitor extends BaseModel {
 					.sort({date: -1})
 					.limit(1)
 					.toArray((err, results) => {
-						console.log('returnnig from latest');
 						if (err) {
+							db.close();
 							reject(err);
 						} else {
+							db.close();
 							resolve(results);
 						}
 					});
 			} catch (e) {
+				db.close();
 				reject(e);
 			}
 		});

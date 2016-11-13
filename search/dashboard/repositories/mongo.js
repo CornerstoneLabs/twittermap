@@ -17,18 +17,24 @@ function connect () {
 
 function get(collectionName, id, originalType) {
 	return new Promise((resolve, reject) => {
+		var db;
+
 		function found(err, document) {
 			if (err) {
+				db.close();
 				reject(err);
 			} else {
 				var returnType = new originalType();
 				Object.assign(returnType, document);
 
 				resolve(returnType);
+
+				db.close();
 			}
 		}
 
 		function success(_db) {
+			db = _db;
 			let collection = _db.collection(collectionName);
 			let query = {
 				_id: ObjectID(id)
@@ -43,15 +49,20 @@ function get(collectionName, id, originalType) {
 
 function update(collectionName, id, data) {
 	return new Promise((resolve, reject) => {
+		var db;
+
 		function found(err, document) {
 			if (err) {
+				db.close();
 				reject(err);
 			} else {
 				resolve(document);
+				db.close();
 			}
 		}
 
 		function success(_db) {
+			db = _db;
 			let collection = _db.collection(collectionName);
 			let query = {
 				_id: ObjectID(id)
@@ -70,15 +81,20 @@ function update(collectionName, id, data) {
 
 function remove(collectionName, id) {
 	return new Promise((resolve, reject) => {
+		var db;
+
 		function found(err, document) {
 			if (err) {
+				db.close();
 				reject(err);
 			} else {
+				db.close();
 				resolve(document);
 			}
 		}
 
 		function success(_db) {
+			db = _db;
 			let collection = _db.collection(collectionName);
 			let query = {
 				_id: ObjectID(id)
@@ -91,17 +107,24 @@ function remove(collectionName, id) {
 	});
 }
 
-function list(collectionName) {
+function list(collectionName, originalType) {
 	return new Promise((resolve, reject) => {
+		var db;
+
 		function found(err, document) {
 			if (err) {
+				db.close();
 				reject(err);
 			} else {
-				resolve(document.toArray());
+				let result = document.toArray();
+				resolve(result);
+				db.close();
 			}
 		}
 
 		function success(_db) {
+			db = _db;
+
 			let collection = _db.collection(collectionName);
 
 			collection.find({}, found);
@@ -113,15 +136,20 @@ function list(collectionName) {
 
 function insert(collectionName, data) {
 	return new Promise((resolve, reject) => {
+		var db;
+
 		function done(err, document) {
 			if (err) {
+				db.close();
 				reject(err);
 			} else {
 				resolve(document);
+				db.close();
 			}
 		}
 
 		function success(_db) {
+			db = _db;
 			let collection = _db.collection(collectionName);
 
 			collection.insertOne(data, done);

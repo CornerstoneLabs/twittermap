@@ -1,5 +1,5 @@
 var Schedule = require('../../models/Schedule.js');
-var scheduletasks = require('../../app/scheduletasks.js');
+var scheduletasks = require('../../app/scheduled-tasks.js');
 
 function scheduleAdd (req, res) {
 	var data = {

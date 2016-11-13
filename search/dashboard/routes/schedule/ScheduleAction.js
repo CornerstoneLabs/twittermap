@@ -1,7 +1,7 @@
 var Schedule = require('../../models/Schedule.js');
 var Monitor = require('../../models/Monitor.js');
 var connect = require('../../repositories/mongo.js').connect;
-var scheduletasks = require('../../app/scheduletasks.js');
+var scheduletasks = require('../../app/scheduled-tasks.js');
 
 async function viewLog(req, res, id) {
 	let schedule = await Schedule.get(id);
@@ -45,8 +45,8 @@ class ScheduleAction {
 	}
 
 	async actionExecute () {
-		var id = this.request.body.selected;
-		var schedule = await Schedule.get(id);
+		let id = this.request.body.selected;
+		let schedule = await Schedule.get(id);
 
 		scheduletasks.executeScheduledItem(schedule);
 
@@ -54,42 +54,42 @@ class ScheduleAction {
 	}
 
 	async actionLastRun () {
-		let id = this.request.body.selected;
-		let schedule = await Schedule.get(id);
-		let monitor = await Monitor.get(schedule.monitor);
-		let results = await monitor.latest();
-		var context = {
-			results: results
-		};
+		try {
+			let id = this.request.body.selected;
+			let schedule = await Schedule.get(id);
+			let monitor = await schedule.Monitor();
+			let results = await monitor.latest();
+			let context = {
+				results: results
+			};
 
-		this.response.render("schedule-latest", context);
+			this.response.render("schedule-latest", context);
+		} catch (e) {
+			console.log(e);
+			this.response.send(500);
+		}
 	}
 
 	async handle () {
 		switch (this.request.body.action) {
-			case 'delete':
-				this.actionDelete();
+		case 'delete':
+			this.actionDelete();
+			break;
 
-				break;
+		case 'execute':
+			this.actionExecute();
+			break;
 
-			case 'execute':
-				this.actionExecute();
+		case 'lastrun':
+			this.actionLastRun();
+			break;
 
-				break;
+		case 'log':
+			viewLog(this.request, this.response, this.request.body.selected);
+			break;
 
-			case 'lastrun':
-				this.actionLastRun();
-
-				break;
-
-			case 'log':
-				viewLog(this.request, this.response, this.request.body.selected);
-
-				break;
-
-
-			default:
-				this.success();
+		default:
+			this.success();
 		}
 	}
 }
