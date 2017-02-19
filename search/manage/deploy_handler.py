@@ -78,6 +78,7 @@ def deploy():
         'agent_tweet_mentions.py',
         'agent_tweet_reply.py',
         'agent_fix_twitter_avatars.py',
+        'agent_fix_all_twitter_avatars.py',
         'dataqueue.py',
         'geohash.py',
         'events.py',

@@ -207,7 +207,7 @@ def check_avatar(item):
         else:
             print('No change to name')
 
-        input('Press enter to fix: ')
+        #input('Press enter to fix: ')
         fix_item(item, user_data)
 
 
