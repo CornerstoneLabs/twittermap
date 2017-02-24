@@ -1,8 +1,10 @@
 """Reply helpers."""
 
 from twython import Twython
+from twython.exceptions import TwythonError
 import json
 import settings
+import time
 
 # Our format:
 #
@@ -192,23 +194,32 @@ def check_avatar(item):
     """It is a tweet user."""
     if 'screen_name' in item:
         twitter = initialise()
-        user_data = twitter.show_user(screen_name=item['screen_name'])
-        print ('Comparing')
-        print (item)
-        print (user_data)
+        failed_tries = 0
+        try:
+            user_data = twitter.show_user(screen_name=item['screen_name'])
+            print ('Comparing')
+            print (item)
+            print (user_data)
 
-        if user_data['profile_image_url_https'] != item['avatar']:
-            print('Updated avatar')
-        else:
-            print('No change to avatar')
+            if user_data['profile_image_url_https'] != item['avatar']:
+                print('Updated avatar')
+            else:
+                print('No change to avatar')
 
-        if user_data['name'] != item['name']:
-            print('Updated name')
-        else:
-            print('No change to name')
+            if user_data['name'] != item['name']:
+                print('Updated name')
+            else:
+                print('No change to name')
 
-        #input('Press enter to fix: ')
-        fix_item(item, user_data)
+            # input('Press enter to fix: ')
+            fix_item(item, user_data)
+        except TwythonError as ex:
+            print('Error, waiting to retry')
+            print(ex)
+            failed_tries = failed_tries + 1
+            if failed_tries < 3:
+                time.sleep(300)
+                check_avatar(item)
 
 
 def handle_item(item, user_to_check):
