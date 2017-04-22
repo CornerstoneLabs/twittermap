@@ -2,6 +2,7 @@
 from agents.fix_twitter_avatars import fix_avatars_run
 import json
 import time
+import urllib.request
 
 
 def read_tweets():
@@ -23,15 +24,27 @@ def get_tweets():
     return parsed
 
 
+def avatar_is_broken(url):
+    """Return true if the url 404s."""
+    try:
+        urllib.request.urlopen(url)
+    except Exception:
+        return True
+
+    return False
+
+
 def fix_all_twitter_avatars():
     """Loop through all the tweets."""
     tweets = get_tweets()
     for item in tweets:
         if 'screen_name' in item:
             print(item['screen_name'])
-            fix_avatars_run(item['screen_name'])
 
-            if 'provider' in item and item['provider'] == 'facebook':
-                print('Facebook user')
-            else:
-                time.sleep(30)
+            if avatar_is_broken(item['avatar']):
+                fix_avatars_run(item['screen_name'])
+
+                if 'provider' in item and item['provider'] == 'facebook':
+                    print('Facebook user')
+                else:
+                    time.sleep(30)
