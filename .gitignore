@@ -95,3 +95,7 @@ search/nodemap/node_modules/
 search/logviewer/node_modules/
 search/dashboard/node_modules/
 search/public/data
+search/.idea/
+search/datastores/
+search/public/cache/
+search/sessions/
