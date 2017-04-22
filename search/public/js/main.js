@@ -401,6 +401,7 @@ function ajax(url, callback, data, x) {
 			'<div><a href="/list">Check out other DumTeeDummer\'s by country.</a></div>' +
 			'<div><br/><br/>To remove yourself, email <a href="mailto:hello@cornerstonelabs.co.uk">hello@cornerstonelabs.co.uk</a></div>' +
 			'<hr>' +
+			'<a href="/privacy-policy.html">Privacy policy.</a>' +
 			socials +
 			'</div>';
 
