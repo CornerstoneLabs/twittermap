@@ -190,8 +190,33 @@ def fix_item(source, twitter_data):
     save_tweet_data(tweets_data)
 
 
+def fix_facebook_item(source, url):
+    """Fix the facebook url."""
+    tweets_data = get_tweets()
+
+    for item in tweets_data:
+        user_found = False
+
+        if 'provider' in item:
+            if item['provider'] == 'facebook':
+                if item['screen_name'] == source['screen_name'] and item['id'] == source['id']:
+                    user_found = True
+        else:
+            pass
+
+        if user_found:
+            print('User looked back up again')
+            item['avatar'] = url
+            print('Changed to')
+            print(item)
+            break
+
+    save_tweet_data(tweets_data)
+
+
 def check_avatar(item):
     """It is a tweet user."""
+    print ('Is a twitter user')
     if 'screen_name' in item:
         twitter = initialise()
         failed_tries = 0
@@ -222,12 +247,25 @@ def check_avatar(item):
                 check_avatar(item)
 
 
+def check_facebook_avatar(item):
+    """Check the avatar URL."""
+    screen_name = item['screen_name']
+    slice_screen_name = screen_name.split('app_scoped_user_id/')[1]
+    id = slice_screen_name.replace('/', '')
+    url = 'https://graph.facebook.com/%s/picture?type=small' % (id)
+
+    fix_facebook_item(item, url)
+
+
 def handle_item(item, user_to_check):
     """Check if it's a twitter item."""
     if 'provider' in item:
         if item['provider'] == 'twitter':
             if item['screen_name'] == user_to_check:
                 check_avatar(item)
+        if item['provider'] == 'facebook':
+            if item['screen_name'] == user_to_check:
+                check_facebook_avatar(item)
     else:
         #
         # Default to twitter

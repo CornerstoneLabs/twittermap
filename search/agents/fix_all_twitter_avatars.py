@@ -30,4 +30,8 @@ def fix_all_twitter_avatars():
         if 'screen_name' in item:
             print(item['screen_name'])
             fix_avatars_run(item['screen_name'])
-            time.sleep(30)
+
+            if 'provider' in item and item['provider'] == 'facebook':
+                print('Facebook user')
+            else:
+                time.sleep(30)
