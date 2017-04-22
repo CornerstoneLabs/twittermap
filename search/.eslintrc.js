@@ -14,7 +14,8 @@ module.exports = {
         ]
     },
     "env": {
-        "browser": true
+        "browser": true,
+        "es6": true
     },
     "globals": {
         "angular": 1,

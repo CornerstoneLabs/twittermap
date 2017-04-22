@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^2.1.2",
+    "bugsnag": "^1.8.0",
     "country-data": "0.0.31",
     "csv": "^1.1.0",
     "dotenv": "^2.0.0",
