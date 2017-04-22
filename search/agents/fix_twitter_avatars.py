@@ -238,7 +238,7 @@ def check_avatar(item):
 
             # input('Press enter to fix: ')
             fix_item(item, user_data)
-        except TwythonError as ex:
+        except Exception as ex:
             print(ex)
             return
             print('Error, waiting to retry')
